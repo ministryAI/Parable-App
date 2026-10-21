@@ -117,6 +117,32 @@ const chat = async (settings: AISettings, messages: ChatMessage[], json: boolean
   return text.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/^[\s\S]*?<\/think>/i, '').trim();
 };
 
+// Repairs what small models do to JSON: raw line breaks inside strings, and a reply cut off before its closing brackets.
+const repairJson = (raw: string): string => {
+  let out = '';
+  let inString = false;
+  let escaped = false;
+  const stack: string[] = [];
+  for (const ch of raw) {
+    if (inString) {
+      if (escaped) { escaped = false; out += ch; continue; }
+      if (ch === '\\') { escaped = true; out += ch; continue; }
+      if (ch === '"') { inString = false; out += ch; continue; }
+      out += ch === '\n' ? '\\n' : ch === '\r' ? '' : ch === '\t' ? '\\t' : ch;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === '{') stack.push('}');
+    else if (ch === '[') stack.push(']');
+    else if (ch === '}' || ch === ']') stack.pop();
+    out += ch;
+  }
+  if (inString) out += '"';
+  // Cut off mid-way: drop a dangling comma or half-written key, then close whatever is still open.
+  out = out.replace(/,\s*$/, '').replace(/,\s*"[^"]*"\s*:?\s*$/, '').replace(/:\s*$/, ': null');
+  return out + stack.reverse().join('');
+};
+
 // Small local models wrap JSON in prose or code fences and leave trailing commas; be forgiving.
 export const parseJsonLoose = <T>(text: string): T => {
   const tryParse = (from: string, to: string) => {
@@ -124,7 +150,8 @@ export const parseJsonLoose = <T>(text: string): T => {
     const end = text.lastIndexOf(to);
     if (start === -1 || end <= start) return undefined;
     const raw = text.slice(start, end + 1);
-    for (const candidate of [raw, raw.replace(/,\s*([}\]])/g, '$1')]) {
+    const cut = text.slice(start);
+    for (const candidate of [raw, raw.replace(/,\s*([}\]])/g, '$1'), repairJson(cut).replace(/,\s*([}\]])/g, '$1'), repairJson(raw).replace(/,\s*([}\]])/g, '$1')]) {
       try {
         return JSON.parse(candidate) as unknown;
       } catch {
@@ -163,8 +190,8 @@ const askJson = async <T>(settings: AISettings, messages: ChatMessage[]): Promis
     try {
       return parseJsonLoose<T>(second);
     } catch {
-      const said = (second || first).replace(/\s+/g, ' ').trim().slice(0, 140);
-      throw new Error(`The AI didn't answer in the format Parable needs. It said: "${said}${said.length >= 140 ? '…' : ''}"`);
+      const said = (second || first).replace(/\s+/g, ' ').trim();
+      throw new Error(`The AI didn't answer in the format Parable needs. It started "${said.slice(0, 80)}" and ended "${said.slice(-80)}" (${said.length} characters).`);
     }
   }
 };
