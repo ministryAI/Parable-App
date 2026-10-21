@@ -150,11 +150,30 @@ const system = (settings: AISettings) => {
 };
 
 // Structured requests are their own focused call that asks for only the JSON.
-const chatJson = async <T>(settings: AISettings, prompt: string): Promise<T> =>
-  parseJsonLoose<T>(await chat(settings, [
+const askJson = async <T>(settings: AISettings, messages: ChatMessage[]): Promise<T> => {
+  const first = await chat(settings, messages, true);
+  try {
+    return parseJsonLoose<T>(first);
+  } catch {
+    // One more try: show the model what it said and ask for only the JSON.
+    const second = await chat(settings, [
+      ...messages,
+      { role: 'user', content: `Your last reply was not valid JSON:\n\n${first.slice(0, 1500)}\n\nReply again with ONLY the JSON object that answers the request: no explanation, no code fence, nothing before "{" or after "}".` },
+    ], true);
+    try {
+      return parseJsonLoose<T>(second);
+    } catch {
+      const said = (second || first).replace(/\s+/g, ' ').trim().slice(0, 140);
+      throw new Error(`The AI didn't answer in the format Parable needs. It said: "${said}${said.length >= 140 ? '…' : ''}"`);
+    }
+  }
+};
+
+const chatJson = <T>(settings: AISettings, prompt: string): Promise<T> =>
+  askJson<T>(settings, [
     { role: 'system', content: `${system(settings)}\n\nYou always respond with a single valid JSON object and nothing else.` },
     { role: 'user', content: prompt },
-  ], true));
+  ]);
 
 const chatText = (settings: AISettings, prompt: string) =>
   chat(settings, [{ role: 'system', content: system(settings) }, { role: 'user', content: prompt }], false);
@@ -378,7 +397,7 @@ export interface ReviewItem {
 export const reviewLesson = async (settings: AISettings, service: ServiceWithSeries): Promise<ReviewItem[]> => {
   const questions = playbookChecklist(settings.playbook ?? '');
   if (!questions.length) throw new Error('Your playbook has no review checklist. Add a "Lesson review checklist" section of yes/no questions in AI settings.');
-  const result = await chat(settings, [
+  const parsed = await askJson<{ results?: unknown[]; items?: unknown[] }>(settings, [
     { role: 'system', content: `${SYSTEM}\n\nYou review lessons against the leader's Ministry Playbook.\n\n${playbookForDrafting(settings.playbook)}\n\nYou always respond with a single valid JSON object and nothing else.` },
     {
       role: 'user',
@@ -391,8 +410,7 @@ export const reviewLesson = async (settings: AISettings, service: ServiceWithSer
         `Respond as {"results":[{"n":1,"pass":true,"part":"the lesson part this is about","fix":"if pass is false, one specific change to make; otherwise empty"}]} with exactly ${questions.length} results, in order.`,
       ].join('\n'),
     },
-  ], true);
-  const parsed = parseJsonLoose<{ results?: unknown[]; items?: unknown[] }>(result);
+  ]);
   const rows = (parsed.results ?? parsed.items ?? []) as { n?: number; pass?: unknown; part?: unknown; fix?: unknown }[];
   return questions.map((question, i) => {
     const r = rows.find((x) => x?.n === i + 1) ?? rows[i] ?? {};
