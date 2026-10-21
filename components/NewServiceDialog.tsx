@@ -9,7 +9,7 @@ import { draftSeries, draftService } from '../services/aiService';
 import { useStore } from '../store/StoreContext';
 import { Button, Label, Modal, TextArea, inputClass } from './ui';
 
-const AUDIENCES = ['Preschool', 'Kids K–5', 'Preteen', 'Middle School', 'High School', 'Family'];
+const AUDIENCES = ['Students', 'Middle School', 'High School', 'Preteen', 'Kids K–5', 'Preschool', 'Family'];
 
 const AudienceInput: React.FC<{ id: string; value: string; onChange: (v: string) => void }> = ({ id, value, onChange }) => (
   <>
@@ -81,10 +81,10 @@ const AIToggle: React.FC<{ on: boolean; setOn: (v: boolean) => void; children: R
 export const NewSeriesDialog: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => {
   const { addSeries, aiSettings, toast } = useStore();
   const [title, setTitle] = useState('');
-  const [audience, setAudience] = useState('Kids K–5');
+  const [audience, setAudience] = useState('Students');
   const [weeks, setWeeks] = useState(4);
   const [color, setColor] = useState<SeriesColor>('indigo');
-  const [layout, setLayout] = useState('kids');
+  const [layout, setLayout] = useState('students');
   const [bigIdea, setBigIdea] = useState('');
   const [useAI, setUseAI] = useState(false);
   const [topic, setTopic] = useState('');
@@ -185,8 +185,8 @@ export const NewServiceDialog: React.FC<{ open: boolean; onClose: () => void; se
   const weeks = series ? weeksOf(db, series.id) : [];
   const lastWeek = weeks[weeks.length - 1];
   const [title, setTitle] = useState('');
-  const [audience, setAudience] = useState('Kids K–5');
-  const [layout, setLayout] = useState('kids');
+  const [audience, setAudience] = useState('Students');
+  const [layout, setLayout] = useState('students');
   const [useAI, setUseAI] = useState(false);
   const [topic, setTopic] = useState('');
   const [loading, setLoading] = useState(false);
@@ -197,7 +197,7 @@ export const NewServiceDialog: React.FC<{ open: boolean; onClose: () => void; se
     setTitle('');
     setTopic('');
     setError('');
-    setLayout(lastWeek ? 'last' : 'kids');
+    setLayout(lastWeek ? 'last' : 'students');
     if (series) setAudience(series.audience);
     // Reset only when the dialog opens, not on every autosave.
   }, [open]);
