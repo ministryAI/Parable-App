@@ -84,7 +84,7 @@ const chat = async (settings: AISettings, messages: ChatMessage[], json: boolean
       stream: false,
       think: false,
       keep_alive: '24h',
-      options: { num_ctx: 12288, temperature },
+      options: { num_ctx: 12288, num_predict: -1, temperature },
       ...(json ? { format: 'json' } : {}),
     };
     let response = await send(settings, url, body);
@@ -102,6 +102,8 @@ const chat = async (settings: AISettings, messages: ChatMessage[], json: boolean
         ? plain.map((m, i) => (i === plain.length - 1 ? { role: m.role, content: [{ type: 'text', text: m.content }, ...images.map((b) => ({ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${b}` } }))] } : m))
         : plain,
       temperature,
+      // Long series outlines get cut off at some servers' default reply length.
+      max_tokens: 8192,
       stream: false,
       ...(kind === 'steward' ? { use_docs: settings.useDocs } : {}),
     };
@@ -117,14 +119,42 @@ const chat = async (settings: AISettings, messages: ChatMessage[], json: boolean
   return text.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/^[\s\S]*?<\/think>/i, '').trim();
 };
 
+// Walk the JSON as written: escape raw line breaks and tabs inside strings (JSON forbids them), and close
+// whatever a reply cut off at the length limit left open, dropping a half-written last entry.
+const repairJson = (raw: string): string => {
+  let out = '';
+  let inString = false;
+  let escaped = false;
+  const stack: string[] = [];
+  for (const c of raw) {
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (c === '\\') escaped = true;
+      else if (c === '"') inString = false;
+      else if (c === '\n') { out += '\\n'; continue; }
+      else if (c === '\r') continue;
+      else if (c === '\t') { out += '\\t'; continue; }
+    } else if (c === '"') inString = true;
+    else if (c === '{' || c === '[') stack.push(c === '{' ? '}' : ']');
+    else if (c === '}' || c === ']') stack.pop();
+    out += c;
+  }
+  if (!inString && !stack.length) return out;
+  if (inString) out += '"';
+  // Trim back to the last complete value, then close the open brackets.
+  out = out.replace(/,\s*"[^"]*"\s*:\s*"?[^,{}[\]]*$/, '').replace(/[,:\s]+$/, '');
+  return out + stack.reverse().join('');
+};
+
 // Small local models wrap JSON in prose or code fences and leave trailing commas; be forgiving.
 export const parseJsonLoose = <T>(text: string): T => {
   const tryParse = (from: string, to: string) => {
     const start = text.indexOf(from);
+    if (start === -1) return undefined;
     const end = text.lastIndexOf(to);
-    if (start === -1 || end <= start) return undefined;
-    const raw = text.slice(start, end + 1);
-    for (const candidate of [raw, raw.replace(/,\s*([}\]])/g, '$1')]) {
+    const raw = text.slice(start, end > start ? end + 1 : undefined);
+    const repaired = repairJson(text.slice(start));
+    for (const candidate of [raw, raw.replace(/,\s*([}\]])/g, '$1'), repaired, repaired.replace(/,\s*([}\]])/g, '$1')]) {
       try {
         return JSON.parse(candidate) as unknown;
       } catch {
