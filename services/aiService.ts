@@ -43,6 +43,23 @@ const failed = async (response: Response) => {
   return new Error(`AI server returned ${response.status}${detail ? `: ${detail.slice(0, 200)}` : ''}`);
 };
 
+// Some servers (Steward among them) answer with a stream of "data: {...}" lines even when asked not to stream.
+// Read the whole reply as text, then take either one JSON object or the pieces of a stream, joined.
+const readReply = async (response: Response): Promise<string | undefined> => {
+  const raw = (await response.text()).trim();
+  const pick = (j: any): string => j?.choices?.[0]?.message?.content ?? j?.choices?.[0]?.delta?.content ?? j?.choices?.[0]?.text ?? j?.message?.content ?? j?.response ?? '';
+  if (!/^(data:|\{[^\n]*\}\s*\n\s*\{)/.test(raw)) {
+    try { return pick(JSON.parse(raw)) || undefined; } catch { throw new Error(`The AI server sent a reply Parable couldn't read: ${raw.slice(0, 80)}`); }
+  }
+  let out = '';
+  for (const line of raw.split('\n')) {
+    const data = line.replace(/^data:\s*/, '').trim();
+    if (!data || data === '[DONE]') continue;
+    try { out += pick(JSON.parse(data)); } catch { /* skip keep-alive or partial lines */ }
+  }
+  return out || undefined;
+};
+
 // Qwen 3 thinks out loud unless told not to; the /no_think switch goes at the end of the last user message.
 const noThink = (settings: AISettings, messages: ChatMessage[]): ChatMessage[] => {
   if (!/qwen3/i.test(settings.model)) return messages;
@@ -74,7 +91,7 @@ const chat = async (settings: AISettings, messages: ChatMessage[], json: boolean
     // Older Ollama versions don't know "think"; fall back to the prompt switch.
     if (response.status === 400) response = await send(settings, url, { ...body, think: undefined, messages: noThink(settings, messages) });
     if (!response.ok) throw await failed(response);
-    text = (await response.json())?.message?.content;
+    text = await readReply(response);
   } else {
     const url = endpoint(settings, '/chat/completions');
     const plain = kind === 'steward' ? messages : noThink(settings, messages);
@@ -92,7 +109,7 @@ const chat = async (settings: AISettings, messages: ChatMessage[], json: boolean
     let response = await send(settings, url, json ? { ...body, response_format: { type: 'json_object' } } : body);
     if (json && (response.status === 400 || response.status === 422)) response = await send(settings, url, body);
     if (!response.ok) throw await failed(response);
-    text = (await response.json())?.choices?.[0]?.message?.content;
+    text = await readReply(response);
   }
 
   if (!text) throw new Error('No response from the AI server.');
