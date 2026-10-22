@@ -193,8 +193,10 @@ const askJson = async <T>(settings: AISettings, messages: ChatMessage[]): Promis
     try {
       return parseJsonLoose<T>(second);
     } catch {
-      const said = (second || first).replace(/\s+/g, ' ').trim().slice(0, 140);
-      throw new Error(`The AI didn't answer in the format Parable needs. It said: "${said}${said.length >= 140 ? '…' : ''}"`);
+      // The start of a reply usually looks fine; the end shows where it broke (cut off, stray text).
+      const flat = (second || first).replace(/\s+/g, ' ').trim();
+      const said = flat.length > 280 ? `${flat.slice(0, 140)} … ${flat.slice(-140)}` : flat;
+      throw new Error(`The AI didn't answer in the format Parable needs (${flat.length} characters). It said: "${said}"`);
     }
   }
 };
