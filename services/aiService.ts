@@ -10,7 +10,24 @@ interface ChatMessage {
   content: string;
 }
 
-const SYSTEM = "You are an experienced children's and youth ministry curriculum writer. You prioritize literary context, historical background, and Jesus-centered theology, and you write engaging, age-appropriate content that a volunteer leader can read and use directly. Avoid Christian jargon where possible; use fresh language.";
+// House voice: holds for every lesson, whatever the playbook says.
+const VOICE = [
+  'No cheesy lines. Write the way a thoughtful leader actually talks to this age group, plainly and specifically.',
+  'Never use stock ministry or youth-group phrases: "God can handle it", "every bit of it", "God\'s got this", "on fire for God", "let go and let God", "God-sized", "a God thing", "Jesus is the reason", "doing life together", "unpack", "heart check".',
+  'No puns, no forced excitement ("How awesome is that?!"), no exclamation-mark hype, no slogans. Say the true thing once, in ordinary words.',
+].join(' ');
+
+// What a family moment should look like for each age, so parents get something that fits their child.
+export const familyGuide = (audience: string) => {
+  const a = audience.toLowerCase();
+  if (/preschool|toddler|nursery/.test(a)) return 'These children are 2–5. The parent leads everything: one short sentence to repeat, a simple action or song, a one-line prayer the parent prays aloud. No reading, no abstract ideas, no questions that need long answers.';
+  if (/k[–-]?5|elementary|kids|children/.test(a)) return 'These children are about 5–10. Use concrete, playful moments: a quick question with a real answer, something to spot or do together, a short prayer the child can repeat or add to. Keep words simple and literal.';
+  if (/preteen|tween/.test(a)) return 'These are 10–12-year-olds. Give real questions they can answer honestly, a little independence (they might lead the prayer), and nothing babyish. Respect that they may be shy about faith talk.';
+  if (/student|middle|high|teen|youth/.test(a)) return 'These are teenagers. Write for a parent talking with a near-adult: one honest conversation starter they can decline, no lecturing, nothing that feels like homework or a worksheet, nothing that would embarrass them. Side-by-side moments (driving, cooking) beat face-to-face ones.';
+  return 'Mixed ages: give a version a younger child can do with help and an older one can lead.';
+};
+
+const SYSTEM = "You are an experienced children's and youth ministry curriculum writer. You prioritize literary context, historical background, and Jesus-centered theology, and you write engaging, age-appropriate content that a volunteer leader can read and use directly. Avoid Christian jargon where possible; use fresh language.\n\n" + VOICE;
 
 const endpoint = (settings: AISettings, path: string) => `${cleanBaseUrl(settings.baseUrl)}${path}`;
 
@@ -372,6 +389,7 @@ export const draftFamilyCue = (settings: AISettings, service: ServiceWithSeries,
     describeService(service),
     '',
     `Write ${FAMILY_ASK[key]} that reinforces this week's lesson for parents of ${service.audience}.`,
+    familyGuide(service.audience),
     service.family[key] && `The current text is:\n${service.family[key]}\n\nRevise or improve it.`,
     instruction && `Additional direction: ${instruction}`,
     'Write it to the parent, in 1–3 sentences. Return only the text.',
@@ -427,8 +445,14 @@ export interface ReviewItem {
 
 // Diana checks one lesson against the playbook's yes/no checklist.
 export const reviewLesson = async (settings: AISettings, service: ServiceWithSeries): Promise<ReviewItem[]> => {
-  const questions = playbookChecklist(settings.playbook ?? '');
-  if (!questions.length) throw new Error('Your playbook has no review checklist. Add a "Lesson review checklist" section of yes/no questions in AI settings.');
+  const own = playbookChecklist(settings.playbook ?? '');
+  if (!own.length) throw new Error('Your playbook has no review checklist. Add a "Lesson review checklist" section of yes/no questions in AI settings.');
+  // Two house checks ride along with the leader's own.
+  const questions = [
+    ...own,
+    'Is every line free of cheesy, stock or cliché phrasing (youth-group slogans, puns, forced excitement)?',
+    `Does every family page moment fit ${service.audience}: something a parent of that age would actually do with their child?`,
+  ];
   const parsed = await askJson<{ results?: unknown[]; items?: unknown[] }>(settings, [
     { role: 'system', content: `${SYSTEM}\n\nYou review lessons against the leader's Ministry Playbook.\n\n${playbookForDrafting(settings.playbook)}\n\nYou always respond with a single valid JSON object and nothing else.` },
     {
@@ -505,6 +529,7 @@ export const draftSeries = async (
     const d = await chatJson<WeekDetail>(settings, [
       `Series: "${seriesTitle}" for ${params.audience}. Week ${i + 1}: "${week.title}". Scripture: ${week.scripture}. Big idea: ${week.bigIdea}.`,
       'Write the full lesson a volunteer leader can read and use directly.',
+      `For the family moments: ${familyGuide(params.audience)}`,
       'Respond as {"objectives":["3 short objectives, each starting with a verb"],"welcome":"2-3 sentence welcome that introduces today\'s topic","illustration":{"title":"short name","script":"120-180 word opening story, object lesson, or game setup the leader says, with [directions] in brackets","supplies":[{"name":"...","qty":1,"per":"total|person|group"}]},"transition":"1-2 sentences that bridge from the illustration to the scripture","background":"2-4 sentences of historical or literary context for the passage","teachingPoints":[{"point":"short headline","script":"100-150 words the leader says"}] (exactly 3),"challenge":{"title":"short name","script":"a specific practice for this week, 2-4 sentences"},"icebreaker":"one fun small group opening question tied to the theme","discussionQuestions":["5 questions moving from observation to interpretation to application"],"prayerFocus":"one sentence on what the small group should pray for","family":{"morning":"a truth a parent can say to start the day","onTheGo":"something to talk about or do in the car","meal":"a question to ask at dinner","bedtime":"a short prayer to pray together"}}',
       FORMAT_RULES,
     ].join('\n'));

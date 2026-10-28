@@ -411,11 +411,11 @@ const LeaderGuide: React.FC<{ series: Series; weeks: Service[] }> = ({ series, w
     <p className="pr-label" style={{ marginTop: '20pt' }}>Symbols in use</p>
     <div className="pr-legend">
       {LEGEND.map(([Icon, name, text]) => (
-        <div key={name}><span className="pr-ico"><Icon /></span><p><b>{name}</b> {text}</p></div>
+        <div key={name}><span className="pr-ico"><Icon /></span><p><b>{name}</b><span>{text}</span></p></div>
       ))}
     </div>
     <div className="pr-avoid">
-    <p className="pr-label" style={{ marginTop: '20pt' }}>The series at a glance</p>
+    <p className="pr-label" style={{ marginTop: '28pt' }}>The series at a glance</p>
     <ol className="pr-weeks">
       {weeks.map((w) => (
         <li key={w.id}>
