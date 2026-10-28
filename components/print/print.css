@@ -410,3 +410,58 @@
 .pr[data-questions="boxed"] .pr-questions li { border: 0.75pt solid var(--rule); border-left: 3pt solid var(--c-raw); border-radius: calc(6pt * var(--r)); padding: 6pt 9pt; margin-bottom: 4pt; }
 /* Scripture as a ruled reading instead of a tinted panel */
 .pr[data-scripture="rule"] .pr-reading { background: none; border-left: 3pt solid var(--c-raw); border-radius: 0; padding: 2pt 0 2pt 14pt; }
+
+/* ---------- House rules ----------
+   These hold for every book, whatever its layout, so a layout file can't undo them.
+   1. No solid dark panels on reading pages: boxes are light, with a border in the series color.
+   2. Three text sizes on reading pages: label, body, and one "lead" step for the single idea a page is about.
+      Headings and big numbers sit outside the scale.
+   3. Run-in labels ("The goal.") are body type in semibold, never the display face.
+   4. One rhythm for gaps: between rows inside a part, and a larger one between parts. */
+.pr {
+  --fs-label: 7pt; --fs-body: 10pt; --fs-lead: 12.5pt;
+  --gap-row: 10pt; --gap-part: 16pt;
+}
+
+/* 1. Light panels */
+.pr .pr-sg-idea > div, .pr .pr-family-strip, .pr .pr-engage, .pr .pr-sg-notes, .pr .pr-side-verse {
+  background: var(--paper-bg, white) !important; color: var(--ink) !important;
+  border: 1pt solid var(--c-line) !important; border-left: 3pt solid var(--c-raw) !important;
+  border-radius: calc(8pt * var(--r)) !important; box-shadow: none !important;
+}
+.pr .pr-sg-idea .pr-serif, .pr .pr-family-strip p, .pr .pr-engage-item p { color: var(--ink) !important; }
+.pr .pr-sg-idea .pr-label, .pr .pr-engage > .pr-label { color: var(--c) !important; }
+.pr .pr-engage-item b, .pr .pr-engage-item.challenge b { color: var(--c-raw) !important; }
+.pr .pr-family-verse { color: var(--muted) !important; }
+.pr .pr-family-strip::after { display: none !important; }
+
+/* 2. Three sizes */
+.pr .pr-label, .pr .pr-eyebrow, .pr .pr-m-label, .pr .pr-p-kind, .pr .pr-sg-kicker, .pr .pr-head-right span,
+.pr .pr-cue, .pr .pr-ov th, .pr .pr-ov-sec span { font-size: var(--fs-label) !important; }
+.pr .pr-say p, .pr .pr-say .pr-list li, .pr .pr-do p, .pr .pr-do .pr-list li, .pr .pr-questions p,
+.pr .pr-sg-questions p, .pr .pr-sg-pray, .pr .pr-sg-small, .pr .pr-sg-notes, .pr .pr-sg-idea .verse .pr-serif,
+.pr .pr-engage-item p, .pr .pr-engage-item b, .pr .pr-side-verse .pr-serif, .pr .pr-family-card .pr-serif,
+.pr .pr-family-verse, .pr .pr-family-sub, .pr .pr-letter, .pr .pr-roles p, .pr .pr-weeks .idea, .pr .pr-legend > div,
+.pr .pr-checklist li, .pr .pr-prep li, .pr .pr-need, .pr .pr-reading, .pr .pr-table, .pr .pr-ov, .pr .pr-bullets li,
+.pr .pr-direction, .pr .pr-supplies span, .pr .pr-more, .pr .pr-ov-foot, .pr .pr-p-when, .pr .pr-weeks .when,
+.pr .pr-weeks .when b, .pr .pr-ov-type, .pr .pr-reading-cue { font-size: var(--fs-body) !important; }
+.pr .pr-sg-idea .pr-serif:not(.verse .pr-serif), .pr .pr-family-strip p:first-child, .pr .pr-aim, .pr .pr-sg-open .pr-serif,
+.pr .pr-bigverse p, .pr .pr-head-right b { font-size: var(--fs-lead) !important; }
+.pr .pr-sg-idea .verse .pr-serif { font-size: var(--fs-body) !important; }
+
+/* 3. Run-in labels and stage cues sit in the line, at body size */
+.pr .pr-lead { font-family: var(--f-ui) !important; font-weight: 650; font-size: 1em !important; color: var(--ink) !important; text-transform: none !important; letter-spacing: 0 !important; }
+.pr .pr-cue { background: none !important; padding: 0 !important; vertical-align: baseline !important; font-size: 0.8em !important; margin-right: 3pt; }
+
+/* 4. Spacing rhythm */
+.pr .pr-m { margin: 0 0 var(--gap-row); }
+.pr .pr-p-head { margin-bottom: var(--gap-row); }
+.pr .pr-p { padding: var(--gap-part) 0 calc(var(--gap-part) - var(--gap-row)); }
+.pr .pr-say p + p, .pr .pr-do p + p, .pr .pr-say p + .pr-list, .pr .pr-do p + .pr-list, .pr .pr-list + p { margin-top: 6pt; }
+
+/* Symbols key: name on one line, what it means under it, every row the same height */
+.pr .pr-legend { grid-auto-rows: 1fr; gap: 10pt 24pt; }
+.pr .pr-legend > div { align-items: flex-start; }
+.pr .pr-legend p { line-height: 1.35; }
+.pr .pr-legend b { display: block; font-weight: 650; }
+.pr .pr-legend p span { display: block; color: var(--muted); }
