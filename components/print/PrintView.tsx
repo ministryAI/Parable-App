@@ -295,7 +295,8 @@ const Surface: React.FC<{ kind: 'cover' | 'divider'; series?: Series; uid: strin
 const CustomPage: React.FC<{ kind: 'cover' | 'divider'; series?: Series; values: Record<string, string> }> = ({ kind, series, values }) => {
   const p = resolvePalette(designOf(series));
   const ref = React.useRef<HTMLElement>(null);
-  const html = fillCustom(designOf(series).custom[kind], values);
+  // The printed curriculum never names the app, even on layouts saved before that rule.
+  const html = fillCustom(designOf(series).custom[kind], values).replace(/\bParable\s*[·|•–-]\s*/g, '').replace(/>\s*Parable\s*</g, '><');
   // On screen (previews) fit marked text now; for printing, printFit does it once the page is laid out.
   React.useLayoutEffect(() => {
     if (ref.current && ref.current.offsetParent !== null) fitText(ref.current);
@@ -344,7 +345,6 @@ const SeriesCover: React.FC<{ series: Series; weeks: Service[] }> = ({ series, w
       title={series.title}
       corner={
         <>
-          <div className="pr-wordmark" data-side={sf.align === 'right' ? 'right' : 'left'}><i /> Parable</div>
           {sf.showCount && <div className="pr-cover-num" data-side={sf.align === 'right' ? 'left' : 'right'}><b>{pad2(weeks.length)}</b><span>Weeks</span></div>}
         </>
       }

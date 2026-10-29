@@ -340,7 +340,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       requestAnimationFrame(() => {
         const root = document.querySelector<HTMLElement>('.pr-root');
         if (root) fitSectionsToPages(root);
+        // The browser names the PDF and stamps its title from the page title; use the book's own name.
+        const appTitle = document.title;
+        const bookTitle = root?.querySelector('h1, h2')?.textContent?.trim();
+        if (bookTitle) document.title = bookTitle;
         window.print();
+        document.title = appTitle;
       });
     });
     return () => {
