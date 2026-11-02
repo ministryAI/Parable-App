@@ -1,8 +1,8 @@
-import React from 'react';
-import { ArrowRightLeft, Bookmark, Copy, ExternalLink, Minus, Plus, Trash2, X } from 'lucide-react';
-import { LinkItem, Part, Section, SectionRole, Service, Supply } from '../../types';
+import React, { useState } from 'react';
+import { ArrowDown, ArrowRightLeft, ArrowUp, Bookmark, Copy, ExternalLink, Minus, Plus, Trash2, X } from 'lucide-react';
+import { LinkItem, Part, PartType, Section, SectionRole, Service, Supply } from '../../types';
 import { PART_TYPES, PART_TYPE_KEYS } from '../../lib/partTypes';
-import { newLink, newSupply } from '../../lib/factory';
+import { newLink, newPart, newSection, newSupply } from '../../lib/factory';
 import { PER_LABELS } from '../../lib/supplies';
 import { formatDuration, sectionMinutes, serviceMinutes } from '../../lib/time';
 import { draftPartText } from '../../services/aiService';
@@ -55,9 +55,33 @@ interface Props {
   update: (fn: (s: Service) => Service) => void;
   actions: SectionActions;
   setPart: (sectionId: string, partId: string, fn: (p: Part) => Part) => void;
+  onAddAfter: (partId: string, type: PartType) => void;
 }
 
-export const Inspector: React.FC<Props> = ({ service, sel, setSel, update, actions, setPart }) => {
+// A grid of part types, for adding a part.
+const TypePicker: React.FC<{ onPick: (t: PartType) => void; label: string }> = ({ onPick, label }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button type="button" onClick={() => setOpen(!open)} className="w-full flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] text-accent hover:bg-black/[0.04]"><Plus className="w-4 h-4" />{label}</button>
+      {open && (
+        <div className="grid grid-cols-4 gap-1 mt-1 mb-2">
+          {PART_TYPE_KEYS.map((k) => {
+            const { label: name, icon: Icon } = PART_TYPES[k];
+            return (
+              <button key={k} type="button" title={name} onClick={() => { setOpen(false); onPick(k); }} className="flex flex-col items-center gap-1 rounded-lg py-2 text-[10.5px] leading-tight text-gray-600 hover:bg-accent hover:text-white">
+                <Icon className="w-4 h-4" />
+                <span className="truncate max-w-full px-0.5">{name.replace(' Activity', '').replace(' Song', '')}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const Inspector: React.FC<Props> = ({ service, sel, setSel, update, actions, setPart, onAddAfter }) => {
   const { aiSettings, saveToLibrary } = useStore();
   const shell = 'lg:sticky lg:top-[68px] lg:max-h-[calc(100vh-88px)] overflow-y-auto bg-white rounded-2xl shadow-card px-5';
 
@@ -148,6 +172,28 @@ export const Inspector: React.FC<Props> = ({ service, sel, setSel, update, actio
           </Group>
 
           <div className="py-4 space-y-1">
+            <TypePicker label="Add a part after this" onPick={(t) => onAddAfter(part.id, t)} />
+            <div className="flex gap-1">
+              {([['up', ArrowUp, -1], ['down', ArrowDown, 1]] as const).map(([name, Icon, dir]) => {
+                const i = section.parts.findIndex((p) => p.id === part.id);
+                const j = i + dir;
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    disabled={j < 0 || j >= section.parts.length}
+                    onClick={() => actions.updateSection(section.id, (s) => {
+                      const parts = [...s.parts];
+                      [parts[i], parts[j]] = [parts[j], parts[i]];
+                      return { ...s, parts };
+                    })}
+                    className="flex-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] text-gray-800 hover:bg-black/[0.04] disabled:opacity-30 disabled:hover:bg-transparent"
+                  >
+                    <Icon className="w-4 h-4 text-gray-500" />Move {name}
+                  </button>
+                );
+              })}
+            </div>
             <button type="button" onClick={() => actions.duplicatePart(section.id, part.id)} className="w-full flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] text-gray-800 hover:bg-black/[0.04]"><Copy className="w-4 h-4 text-gray-500" />Duplicate</button>
             <button type="button" onClick={() => saveToLibrary(part)} className="w-full flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] text-gray-800 hover:bg-black/[0.04]"><Bookmark className="w-4 h-4 text-gray-500" />Save to library</button>
             {others.length > 0 && (
@@ -192,6 +238,14 @@ export const Inspector: React.FC<Props> = ({ service, sel, setSel, update, actio
             <Switch label="Start a new page after" checked={section.pageBreak} onChange={(pageBreak) => set({ pageBreak })} />
           </Group>
           <div className="py-4 space-y-1">
+            <TypePicker
+              label="Add a part to this section"
+              onPick={(t) => {
+                const np = newPart({ type: t, title: PART_TYPES[t].label, minutes: 5 });
+                actions.updateSection(section.id, (s) => ({ ...s, parts: [...s.parts, np] }));
+                setSel({ kind: 'part', sectionId: section.id, partId: np.id });
+              }}
+            />
             <button type="button" onClick={() => actions.duplicateSection(section.id)} className="w-full flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] text-gray-800 hover:bg-black/[0.04]"><Copy className="w-4 h-4 text-gray-500" />Duplicate section</button>
             <button type="button" onClick={() => { actions.deleteSection(section.id); setSel(null); }} className="w-full flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] text-red-600 hover:bg-red-500/10"><Trash2 className="w-4 h-4" />Delete section</button>
           </div>
@@ -211,7 +265,18 @@ export const Inspector: React.FC<Props> = ({ service, sel, setSel, update, actio
             <span key={s.id} title={`${s.title}: ${sectionMinutes(s)} min`} style={{ flex: sectionMinutes(s) || 0.0001, background: ['#FF9F0A', '#64D2FF', '#5E5CE6', '#30D158', '#FF375F', '#BF5AF2'][i % 6] }} />
           ))}
         </div>
-        <p className="text-[12px] text-gray-500 mt-3">Click any part on the page to see its details here.</p>
+        <p className="text-[12px] text-gray-500 mt-3">Click any words on the page to change them. Click a part to see its details here.</p>
+        <button
+          type="button"
+          onClick={() => {
+            const sec = newSection({ title: 'New section', role: 'large', parts: [newPart({ type: 'script', title: 'New part', minutes: 5 })] });
+            update((s) => ({ ...s, sections: [...s.sections, sec] }));
+            setSel({ kind: 'section', id: sec.id });
+          }}
+          className="mt-2 inline-flex items-center gap-1 text-[13px] text-accent hover:underline"
+        >
+          <Plus className="w-3.5 h-3.5" />Add a section
+        </button>
       </div>
       <SidePanel service={service} update={update} onJumpToPart={(id) => window.dispatchEvent(new CustomEvent('parable:open-part', { detail: id }))} />
     </aside>

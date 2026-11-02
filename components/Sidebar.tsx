@@ -59,15 +59,18 @@ export const Sidebar: React.FC<{ route: Route }> = ({ route }) => {
             return (
               <div key={s.id}>
                 <Item
-                  active={route.name === 'series' && route.id === s.id}
+                  active={route.name === 'series' && route.id === s.id && route.view !== 'book'}
                   onClick={() => navigate(`/series/${s.id}`)}
                   icon={<span className="w-3.5 h-3.5 rounded-[4px] shrink-0 shadow-[inset_0_0_0_0.5px_rgb(0_0_0/0.15)]" style={{ background: color }} />}
                   trail={lessons.length}
                 >
                   {s.title}
                 </Item>
-                {open && lessons.length > 0 && (
+                {open && (
                   <div className="mt-px mb-1 space-y-px">
+                    <Item inset active={route.name === 'series' && route.id === s.id && route.view === 'book'} onClick={() => navigate(`/series/${s.id}/book`)}>
+                      <span className="text-gray-500">Cover &amp; leader guide</span>
+                    </Item>
                     {lessons.map((l, i) => {
                       const here = route.name === 'service' && route.id === l.id;
                       return (
