@@ -4,11 +4,11 @@ import { Loader2, LucideIcon, MoreVertical, X } from 'lucide-react';
 type ButtonVariant = 'primary' | 'outline' | 'ghost' | 'danger' | 'ai';
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-white shadow-sm hover:bg-accent-dark',
-  outline: 'bg-white text-ink border border-line shadow-sm hover:bg-gray-50 hover:border-gray-300',
-  ghost: 'text-gray-600 hover:bg-gray-100 hover:text-ink',
-  danger: 'text-red-700 border border-red-200 bg-white hover:bg-red-50',
-  ai: 'bg-accent-soft text-accent hover:bg-indigo-100',
+  primary: 'bg-accent text-white hover:bg-accent-dark active:brightness-95',
+  outline: 'bg-black/[0.05] text-ink hover:bg-black/[0.08] active:bg-black/[0.11]',
+  ghost: 'text-gray-600 hover:bg-black/[0.05] hover:text-ink',
+  danger: 'bg-red-500/10 text-red-600 hover:bg-red-500/15',
+  ai: 'bg-accent-soft text-accent hover:bg-accent/15',
 };
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -20,8 +20,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button: React.FC<ButtonProps> = ({ variant = 'primary', size = 'md', icon: Icon, loading, className = '', children, disabled, ...props }) => (
   <button
-    className={`inline-flex items-center justify-center gap-2 font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 ${
-      size === 'sm' ? 'px-3 py-1.5 text-sm' : 'px-4 py-2.5 text-sm'
+    className={`inline-flex items-center justify-center gap-1.5 font-medium rounded-full transition-[background-color,transform,filter] active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 ${
+      size === 'sm' ? 'px-3.5 py-1.5 text-[13px]' : 'px-5 py-2 text-sm'
     } ${VARIANTS[variant]} ${className}`}
     disabled={disabled || loading}
     {...props}
@@ -44,7 +44,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       type="button"
       aria-label={label}
       title={label}
-      className={`p-1.5 rounded-md transition-colors ${active ? 'bg-gray-200 text-ink' : 'text-gray-500 hover:bg-gray-100 hover:text-ink'} ${className}`}
+      className={`p-1.5 rounded-full transition-colors ${active ? 'bg-black/[0.08] text-ink' : 'text-gray-500 hover:bg-black/[0.05] hover:text-ink'} ${className}`}
       {...props}
     >
       <Icon className="w-4 h-4" />
@@ -63,16 +63,16 @@ export const Modal: React.FC<{ open: boolean; onClose: () => void; title: string
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-[2px] flex items-start md:items-center justify-center p-4 overflow-y-auto" onMouseDown={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/25 backdrop-blur-sm flex items-start md:items-center justify-center p-4 overflow-y-auto animate-fade" onMouseDown={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
         onMouseDown={(e) => e.stopPropagation()}
-        className={`bg-white border border-line shadow-lift w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} rounded-2xl my-8`}
+        className={`bg-white shadow-lift w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} rounded-[22px] my-8 animate-sheet`}
       >
         <div className="flex items-center justify-between px-6 pt-5 pb-3">
-          <h2 className="text-xl font-display">{title}</h2>
+          <h2 className="text-[19px] font-display">{title}</h2>
           <IconButton icon={X} label="Close" onClick={onClose} />
         </div>
         <div className="px-6 pb-6">{children}</div>
@@ -105,7 +105,7 @@ export const Menu: React.FC<{ label?: string; icon?: LucideIcon; children: React
         <IconButton icon={icon} label={label} active={open} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)} />
       )}
       {open && (
-        <div role="menu" className="absolute right-0 z-40 mt-1 w-60 bg-white border border-line rounded-xl shadow-lift py-1" onClick={() => setOpen(false)}>
+        <div role="menu" className="absolute right-0 z-40 mt-1.5 w-60 material rounded-xl shadow-lift p-1.5 animate-fade" onClick={() => setOpen(false)}>
           {children}
         </div>
       )}
@@ -118,23 +118,23 @@ export const MenuItem: React.FC<{ icon?: LucideIcon; onClick: () => void; danger
     role="menuitem"
     type="button"
     onClick={onClick}
-    className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left hover:bg-gray-50 ${danger ? 'text-red-700' : 'text-gray-800'}`}
+    className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 text-[13px] text-left rounded-md hover:bg-accent hover:text-white ${danger ? 'text-red-600' : 'text-gray-800'}`}
   >
     {Icon && <Icon className="w-4 h-4 shrink-0" />}
     {children}
   </button>
 );
 
-export const MenuDivider = () => <div className="my-1 border-t border-gray-100" />;
+export const MenuDivider = () => <div className="my-1 mx-2.5 border-t border-black/10" />;
 
 export const Label: React.FC<{ children: React.ReactNode; htmlFor?: string }> = ({ children, htmlFor }) => (
-  <label htmlFor={htmlFor} className="block font-bold text-gray-600 uppercase tracking-wider text-[11px] mb-1.5">
+  <label htmlFor={htmlFor} className="block font-medium text-gray-500 text-[12px] mb-1.5">
     {children}
   </label>
 );
 
 export const inputClass =
-  'w-full bg-white border border-line px-3 py-2 text-sm rounded-lg focus:border-accent focus:ring-2 focus:ring-accent/15 focus:outline-none transition-colors placeholder:text-gray-400';
+  'w-full bg-white border border-black/10 px-3 py-2 text-sm rounded-lg focus:border-accent focus:ring-[3px] focus:ring-accent/25 focus:outline-none transition-[border-color,box-shadow] placeholder:text-gray-400';
 
 export const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & { minRows?: number }> = ({ minRows = 3, className = '', value, ...props }) => {
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -150,7 +150,8 @@ export const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement
 
 export const Toggle: React.FC<{ checked: boolean; onChange: (v: boolean) => void; label: string }> = ({ checked, onChange, label }) => (
   <label className="inline-flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
-    <input type="checkbox" className="w-4 h-4 accent-indigo-600" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+    <input type="checkbox" role="switch" className="sr-only peer" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+    <span aria-hidden="true" className="relative w-[34px] h-5 rounded-full bg-gray-300 transition-colors peer-checked:bg-[#34C759] peer-focus-visible:ring-[3px] peer-focus-visible:ring-accent/40 after:absolute after:top-0.5 after:left-0.5 after:w-4 after:h-4 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-[14px]" />
     {label}
   </label>
 );

@@ -465,3 +465,14 @@
 .pr .pr-legend p { line-height: 1.35; }
 .pr .pr-legend b { display: block; font-weight: 650; }
 .pr .pr-legend p span { display: block; color: var(--muted); }
+
+/* 5. Borders print whole and even: every box gets the same weight on all four sides, and nothing sits
+   exactly on the right margin, where the browser can round a hairline border away. */
+.pr .pr-page:not(.pr-cover):not(.pr-divider), .pr .pr-flow { padding-right: 2pt; }
+.pr .pr-sg-idea > div, .pr .pr-family-strip, .pr .pr-engage, .pr .pr-sg-notes, .pr .pr-side-verse {
+  border: 1.25pt solid var(--c-raw) !important;
+}
+.pr .pr-family-card, .pr .pr-sg-close > div, .pr .pr-roles > div, .pr .pr-link { border-width: 1.25pt !important; }
+.pr[data-questions="boxed"] .pr-sg-questions li, .pr[data-questions="boxed"] .pr-questions li { border: 1.25pt solid var(--c-line) !important; }
+.pr .pr-m.note .pr-m-body, .pr .pr-m.inclusion .pr-m-body { border: 1.25pt solid currentColor; border-color: #F59E0B; border-radius: calc(6pt * var(--r)); }
+.pr .pr-m.inclusion .pr-m-body { border-color: #10B981; }

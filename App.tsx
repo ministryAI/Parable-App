@@ -1,11 +1,12 @@
 import React from 'react';
-import { AlertTriangle, Bookmark, Check, Cloud, Layers, Loader2, Sparkles, Undo2, X } from 'lucide-react';
+import { AlertTriangle, BookOpen, Bookmark, Check, Cloud, Layers, Loader2, Sparkles, Undo2, Wand2, X } from 'lucide-react';
 import { StoreProvider, useStore } from './store/StoreContext';
 import { navigate, useRoute } from './lib/route';
 import { ShelfPage } from './components/ShelfPage';
 import { SeriesPage } from './components/SeriesPage';
 import { ServiceEditor } from './components/ServiceEditor';
 import { LibraryPage } from './components/LibraryPage';
+import { StudioPage } from './components/studio/StudioPage';
 import { SettingsPanel } from './components/SettingsPanel';
 import { PrintRoot } from './components/print/PrintView';
 
@@ -21,28 +22,30 @@ const Shell: React.FC = () => {
   const { setSettingsOpen, aiStatus, toasts, dismissToast } = useStore();
   const aiDot = { off: 'bg-gray-300', checking: 'bg-amber-400', online: 'bg-emerald-500', offline: 'bg-red-500' }[aiStatus];
   const aiLabel = { off: 'AI off', checking: 'AI…', online: 'AI on', offline: 'AI offline' }[aiStatus];
-  const nav = (active: boolean) => `px-2 sm:px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap ${active ? 'bg-accent-soft text-accent' : 'text-gray-500 hover:text-ink'}`;
+  const shelf = route.name === 'home' || route.name === 'series-list' || route.name === 'series' || route.name === 'service';
 
   return (
     <>
       <div className="min-h-screen bg-canvas font-sans text-ink print:hidden">
-        <nav className="border-b border-line bg-white/85 backdrop-blur sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 flex items-center gap-2">
-            <button type="button" onClick={() => navigate('/')} className="flex items-center gap-2 text-lg mr-2 sm:mr-4">
-              <span className="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center"><Layers className="w-5 h-5" /></span>
-              <span className="hidden sm:inline font-display tracking-tight">Parable</span>
+        <nav className="material border-b border-black/[0.06] sticky top-0 z-40">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 h-[52px] grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+            <button type="button" onClick={() => navigate('/')} className="justify-self-start flex items-center gap-2 rounded-lg">
+              <span className="w-7 h-7 rounded-[8px] bg-gradient-to-b from-[#2b8cff] to-[#0062C4] text-white flex items-center justify-center shadow-sm"><Layers className="w-4 h-4" /></span>
+              <span className="hidden sm:inline text-[15px] font-semibold tracking-tight">Parable</span>
             </button>
-            <button type="button" className={nav(route.name === 'home' || route.name === 'series-list' || route.name === 'series' || route.name === 'service')} onClick={() => navigate('/')}>Shelf</button>
-            <button type="button" className={nav(route.name === 'library')} onClick={() => navigate('/library')}>
-              <Bookmark className="w-4 h-4 hidden sm:inline -mt-0.5 mr-1" />Library
-            </button>
-            <div className="flex-1" />
-            <span className="hidden md:inline text-xs text-gray-500 mr-3"><SaveIndicator /></span>
-            <button type="button" onClick={() => setSettingsOpen(true)} className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-ink px-2 py-1.5 rounded-lg hover:bg-gray-100">
-              <Sparkles className="w-4 h-4" />
-              <span className={`w-2 h-2 rounded-full ${aiDot}`} aria-hidden="true" />
-              <span className="hidden sm:inline">{aiLabel}</span>
-            </button>
+            <div className="segmented" role="tablist" aria-label="Sections">
+              <button type="button" aria-current={shelf ? 'page' : undefined} onClick={() => navigate('/')}><BookOpen className="w-3.5 h-3.5 hidden sm:inline" />Shelf</button>
+              <button type="button" aria-current={route.name === 'library' ? 'page' : undefined} onClick={() => navigate('/library')}><Bookmark className="w-3.5 h-3.5 hidden sm:inline" />Library</button>
+              <button type="button" aria-current={route.name === 'studio' ? 'page' : undefined} onClick={() => navigate('/studio')}><Wand2 className="w-3.5 h-3.5 hidden sm:inline" />Studio</button>
+            </div>
+            <div className="justify-self-end flex items-center gap-1">
+              <span className="hidden lg:inline text-xs text-gray-500 mr-2"><SaveIndicator /></span>
+              <button type="button" onClick={() => setSettingsOpen(true)} className="inline-flex items-center gap-1.5 text-[13px] font-medium text-gray-700 hover:text-ink px-2.5 py-1.5 rounded-full hover:bg-black/[0.05]">
+                <Sparkles className="w-4 h-4" />
+                <span className={`w-1.5 h-1.5 rounded-full ${aiDot}`} aria-hidden="true" />
+                <span className="hidden sm:inline">{aiLabel}</span>
+              </button>
+            </div>
           </div>
         </nav>
 
@@ -51,12 +54,13 @@ const Shell: React.FC = () => {
           {route.name === 'series-list' && <ShelfPage />}
           {route.name === 'series' && <SeriesPage key={route.id} seriesId={route.id} />}
           {route.name === 'library' && <LibraryPage />}
+          {route.name === 'studio' && <StudioPage />}
           {route.name === 'home' && <ShelfPage />}
         </main>
 
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 space-y-2 w-[calc(100%-2rem)] max-w-md" aria-live="polite">
           {toasts.map((t) => (
-            <div key={t.id} className="flex items-center gap-3 bg-ink text-white rounded-xl px-4 py-3 shadow-lift text-sm">
+            <div key={t.id} className="flex items-center gap-3 material-dark text-white rounded-2xl px-4 py-3 shadow-lift text-sm animate-sheet">
               <span className="flex-1">{t.message}</span>
               {t.undo && (
                 <button type="button" className="inline-flex items-center gap-1 font-semibold underline" onClick={() => { t.undo!(); dismissToast(t.id); }}>

@@ -108,7 +108,7 @@ export const SeriesPage: React.FC<{ seriesId: string }> = ({ seriesId }) => {
 
       <div className={`grid grid-cols-1 gap-6 items-start ${view === 'book' ? 'lg:grid-cols-[minmax(0,1fr)_340px]' : 'lg:grid-cols-[minmax(0,1fr)_320px]'}`}>
         <section className="min-w-0">
-          <div role="tablist" aria-label="Series view" className="inline-flex flex-wrap bg-white border border-line rounded-lg p-0.5 mb-4">
+          <div role="tablist" aria-label="Series view" className="segmented flex-wrap mb-4">
             {tabs.map(([id, text, Icon]) => (
               <button
                 key={id}
@@ -116,7 +116,6 @@ export const SeriesPage: React.FC<{ seriesId: string }> = ({ seriesId }) => {
                 role="tab"
                 aria-selected={view === id}
                 onClick={() => setView(id)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md ${view === id ? 'bg-accent text-white font-semibold' : 'text-gray-600 hover:text-ink'}`}
               >
                 <Icon className="w-4 h-4" /> {text}
               </button>
