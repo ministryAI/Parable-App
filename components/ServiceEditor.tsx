@@ -8,12 +8,10 @@ import { COLOR_CLASSES, weeksOf } from '../lib/series';
 import { buildElapsed, formatDuration, serviceMinutes, visibleParts } from '../lib/time';
 import { downloadJson, slug } from '../lib/files';
 import { navigate } from '../lib/route';
-import { JUMP_EVENT, useSidebarShown } from '../lib/sidebar';
 import { useStore } from '../store/StoreContext';
 import { restrictToVerticalAxis } from './dndModifiers';
 import { SectionActions, SectionCard } from './SectionCard';
 import { SidePanel } from './SidePanel';
-import { WriteView } from './write/WriteView';
 import { PreviewKind, PrintPreview } from './print/PrintView';
 import { Button, EmptyState, Menu, MenuDivider, MenuItem } from './ui';
 
@@ -35,14 +33,6 @@ const readPref = <T,>(fallback: T): T => {
 };
 
 export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }> = ({ serviceId, focusPartId }) => {
-  const sidebarShown = useSidebarShown();
-  // The sidebar's part links land here.
-  const openPartRef = React.useRef<(partId: string) => void>(() => {});
-  useEffect(() => {
-    const onJump = (e: Event) => openPartRef.current((e as CustomEvent<string>).detail);
-    window.addEventListener(JUMP_EVENT, onJump);
-    return () => window.removeEventListener(JUMP_EVENT, onJump);
-  }, []);
   const { db, updateService, addServices, addWeeks, deleteService, toast, print } = useStore();
   const found = db.services.find((s) => s.id === serviceId);
   const series = found?.seriesId ? db.series.find((s) => s.id === found.seriesId) : undefined;
@@ -56,7 +46,7 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
   // Times count from the start of the lesson (0:00, 0:04…); clock times belong to a run, not the lesson.
   const schedule = useMemo(() => (service ? buildElapsed(service) : {}), [service]);
   // Live preview of the printed pages beside the editor; the choice is remembered per browser.
-  const [pref, setPref] = useState(() => readPref<{ on: boolean; kind: PreviewKind; panel: 'preview' | 'details'; mode: 'write' | 'cards' }>({ on: true, kind: 'week', panel: 'preview', mode: 'write' }));
+  const [pref, setPref] = useState(() => readPref<{ on: boolean; kind: PreviewKind; panel: 'preview' | 'details' }>({ on: true, kind: 'week', panel: 'preview' }));
   const savePref = (next: Partial<typeof pref>) => {
     const merged = { ...pref, ...next };
     setPref(merged);
@@ -72,7 +62,7 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
   liveRef.current = { pref, service };
   const showInPreview = React.useCallback((partId: string) => {
     const { pref: p, service: svc } = liveRef.current;
-    if (p.mode === 'write' || !p.on || p.panel !== 'preview' || !svc) return;
+    if (!p.on || p.panel !== 'preview' || !svc) return;
     const find = () => {
       const box = previewRef.current;
       if (!box) return null;
@@ -189,45 +179,14 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
     setTimeout(() => window.dispatchEvent(new CustomEvent('parable:open-part', { detail: partId })), 50);
     setTimeout(() => showInPreview(partId), 120);
   };
-  openPartRef.current = openPart;
   const jumpToPart = (partId: string) => {
     const section = service.sections.find((s) => s.parts.some((p: Part) => p.id === partId));
     if (section?.collapsed) actions.updateSection(section.id, (s) => ({ ...s, collapsed: false }));
     requestAnimationFrame(() => document.getElementById(`part-${partId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
-  const printMenu = (
-    <Menu trigger={<Button type="button" icon={Printer}>Print</Button>}>
-      <MenuItem icon={BookOpen} onClick={() => print(service.id, { kind: 'week' })}>Whole lesson (large group, small group, family)</MenuItem>
-      <MenuItem icon={FileText} onClick={() => print(service.id, { kind: 'lesson' })}>Large group lesson</MenuItem>
-      <MenuItem icon={Users} onClick={() => print(service.id, { kind: 'small' })}>Small group guide</MenuItem>
-      <MenuItem icon={Sunrise} onClick={() => print(service.id, { kind: 'family' })}>Family page</MenuItem>
-      <MenuItem icon={Scissors} onClick={() => print(service.id, { kind: 'takehome' })}>Take-home cards (2 per page)</MenuItem>
-      <MenuDivider />
-      <MenuItem icon={LayoutList} onClick={() => print(service.id, { kind: 'run-sheet' })}>Run sheet</MenuItem>
-      <MenuItem icon={Package} onClick={() => print(service.id, { kind: 'supplies' })}>Supply list</MenuItem>
-    </Menu>
-  );
-  const lessonMenu = (
-    <Menu label="Lesson actions">
-      <MenuItem icon={Copy} onClick={duplicate}>Duplicate lesson</MenuItem>
-      <MenuItem icon={Download} onClick={() => downloadJson(`${slug(service.title)}.parable.json`, { version: 1, series: [], services: [found!], library: [] })}>Export file</MenuItem>
-      <MenuItem icon={LayoutList} onClick={() => mapSections((secs) => secs.map((s) => ({ ...s, collapsed: !allCollapsed })))}>
-        {allCollapsed ? 'Expand all sections' : 'Collapse all sections'}
-      </MenuItem>
-      <MenuDivider />
-      <MenuItem icon={Trash2} danger onClick={() => { deleteService(service.id); navigate(series ? `/series/${series.id}` : '/'); }}>Delete lesson</MenuItem>
-    </Menu>
-  );
-  const modeSwitch = (
-    <div className="segmented" role="tablist" aria-label="Editor">
-      <button type="button" role="tab" aria-selected={pref.mode === 'write'} onClick={() => savePref({ mode: 'write' })}>Write</button>
-      <button type="button" role="tab" aria-selected={pref.mode !== 'write'} onClick={() => savePref({ mode: 'cards' })}>Cards</button>
-    </div>
-  );
-
   return (
-    <div className={`${pref.on && pref.mode !== 'write' ? 'max-w-[1680px]' : 'max-w-7xl'} mx-auto px-4 md:px-6 pb-24`}>
+    <div className={`${pref.on ? 'max-w-[1680px]' : 'max-w-7xl'} mx-auto px-4 md:px-6 pb-24`}>
       <div className="flex items-center gap-2 text-sm text-gray-500 py-3">
         <button type="button" onClick={() => navigate('/')} className="inline-flex items-center gap-1 hover:text-ink">
           <ArrowLeft className="w-4 h-4" /> Shelf
@@ -240,15 +199,8 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
             </button>
           </>
         )}
-        <div className="ml-auto flex items-center gap-2">
-          {modeSwitch}
-          {pref.mode === 'write' && <>{printMenu}{lessonMenu}</>}
-        </div>
       </div>
 
-      {pref.mode === 'write' ? (
-        <WriteView service={service} series={series} update={update} actions={actions} />
-      ) : (<>
       <header className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
         <div className="flex-1 min-w-0">
           <input
@@ -268,17 +220,30 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
           <Button type="button" variant="outline" icon={pref.on ? EyeOff : Eye} onClick={() => savePref({ on: !pref.on })} className="hidden lg:inline-flex">
             {pref.on ? 'Hide preview' : 'Preview'}
           </Button>
-          {printMenu}
-          {lessonMenu}
+          <Menu trigger={<Button type="button" icon={Printer}>Print</Button>}>
+            <MenuItem icon={BookOpen} onClick={() => print(service.id, { kind: 'week' })}>Whole lesson (large group, small group, family)</MenuItem>
+            <MenuItem icon={FileText} onClick={() => print(service.id, { kind: 'lesson' })}>Large group lesson</MenuItem>
+            <MenuItem icon={Users} onClick={() => print(service.id, { kind: 'small' })}>Small group guide</MenuItem>
+            <MenuItem icon={Sunrise} onClick={() => print(service.id, { kind: 'family' })}>Family page</MenuItem>
+            <MenuItem icon={Scissors} onClick={() => print(service.id, { kind: 'takehome' })}>Take-home cards (2 per page)</MenuItem>
+            <MenuDivider />
+            <MenuItem icon={LayoutList} onClick={() => print(service.id, { kind: 'run-sheet' })}>Run sheet</MenuItem>
+            <MenuItem icon={Package} onClick={() => print(service.id, { kind: 'supplies' })}>Supply list</MenuItem>
+          </Menu>
+          <Menu label="Lesson actions">
+            <MenuItem icon={Copy} onClick={duplicate}>Duplicate lesson</MenuItem>
+            <MenuItem icon={Download} onClick={() => downloadJson(`${slug(service.title)}.parable.json`, { version: 1, series: [], services: [found!], library: [] })}>Export file</MenuItem>
+            <MenuItem icon={LayoutList} onClick={() => mapSections((secs) => secs.map((s) => ({ ...s, collapsed: !allCollapsed })))}>
+              {allCollapsed ? 'Expand all sections' : 'Collapse all sections'}
+            </MenuItem>
+            <MenuDivider />
+            <MenuItem icon={Trash2} danger onClick={() => { deleteService(service.id); navigate(series ? `/series/${series.id}` : '/'); }}>Delete lesson</MenuItem>
+          </Menu>
         </div>
       </header>
 
-      <div className={`grid grid-cols-1 gap-6 items-start ${
-        sidebarShown
-          ? pref.on ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]' : 'lg:grid-cols-[minmax(0,1fr)_380px]'
-          : pref.on ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[210px_minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[230px_minmax(0,5fr)_minmax(0,6fr)]' : 'lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[210px_minmax(0,1fr)_380px]'
-      }`}>
-        {!sidebarShown && <Outline service={service} lessons={series ? weeksOf(db, series.id) : [service]} onPart={openPart} />}
+      <div className={`grid grid-cols-1 gap-6 items-start ${pref.on ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[210px_minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[230px_minmax(0,5fr)_minmax(0,6fr)]' : 'lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[210px_minmax(0,1fr)_380px]'}`}>
+        <Outline service={service} lessons={series ? weeksOf(db, series.id) : [service]} onPart={openPart} />
         <div className="space-y-4" onFocus={pref.on ? followInPreview : undefined} onClick={pref.on ? followInPreview : undefined}>
           {service.sections.length === 0 && (
             <div className="border-2 border-dashed border-gray-300 rounded-xl">
@@ -297,11 +262,11 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
         {pref.on ? (
           <div className="hidden lg:flex flex-col gap-3 lg:sticky lg:top-[76px] lg:h-[calc(100vh-92px)]">
             <div className="flex items-center gap-2 shrink-0">
-              <div role="tablist" aria-label="Right panel" className="segmented">
-                <button type="button" role="tab" aria-selected={pref.panel === 'preview'} onClick={() => savePref({ panel: 'preview' })} >
+              <div role="tablist" aria-label="Right panel" className="inline-flex bg-white border border-line rounded-lg p-0.5">
+                <button type="button" role="tab" aria-selected={pref.panel === 'preview'} onClick={() => savePref({ panel: 'preview' })} className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md ${pref.panel === 'preview' ? 'bg-accent text-white font-semibold' : 'text-gray-600 hover:text-ink'}`}>
                   <Eye className="w-4 h-4" /> Preview
                 </button>
-                <button type="button" role="tab" aria-selected={pref.panel === 'details'} onClick={() => savePref({ panel: 'details' })} >
+                <button type="button" role="tab" aria-selected={pref.panel === 'details'} onClick={() => savePref({ panel: 'details' })} className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md ${pref.panel === 'details' ? 'bg-accent text-white font-semibold' : 'text-gray-600 hover:text-ink'}`}>
                   <PanelRight className="w-4 h-4" /> Details
                 </button>
               </div>
@@ -326,7 +291,6 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
           <SidePanel service={service} update={update} onJumpToPart={jumpToPart} />
         </div>
       </div>
-      </>)}
     </div>
   );
 };
