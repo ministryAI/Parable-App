@@ -1,5 +1,9 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { CollisionDetection, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, closestCenter, pointerWithin, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { GripVertical, Plus } from 'lucide-react';
+import { restrictToVerticalAxis } from '../dndModifiers';
 import { Part, PartType, Section, Series, Service } from '../../types';
 import { PART_TYPES, PART_TYPE_KEYS } from '../../lib/partTypes';
 import { newPart, newSection } from '../../lib/factory';
@@ -13,16 +17,24 @@ import { Inspector, Selection } from './Inspector';
 
 const GUTTER = 'grid grid-cols-[76px_minmax(0,1fr)] gap-x-5';
 
+// Parts are tall, so drop where the pointer is, not where the middle of the dragged part happens to be.
+const pointerFirst: CollisionDetection = (args) => {
+  const hits = pointerWithin(args);
+  return hits.length ? hits : closestCenter(args);
+};
+
 // A textarea that looks like page text and grows with what you type.
-const PageText: React.FC<{
+const PageText = React.forwardRef<HTMLTextAreaElement, {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
   className?: string;
   label: string;
   show: boolean;
-}> = ({ value, onChange, placeholder, className = '', label, show }) => {
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+}>(({ value, onChange, placeholder, className = '', label, show, onKeyDown }, outer) => {
   const ref = useRef<HTMLTextAreaElement>(null);
+  React.useImperativeHandle(outer, () => ref.current!, []);
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -37,9 +49,50 @@ const PageText: React.FC<{
       aria-label={label}
       value={value}
       placeholder={placeholder}
+      onKeyDown={onKeyDown}
       onChange={(e) => onChange(e.target.value)}
       className={`block w-full resize-none overflow-hidden bg-transparent border-0 p-0 focus:outline-none focus:ring-0 placeholder:text-gray-300 ${className}`}
     />
+  );
+});
+PageText.displayName = 'PageText';
+
+// Typing "/" at the start of a line: pick a part type to add right after this one.
+const SlashMenu: React.FC<{ onPick: (t: PartType) => void; onClose: () => void }> = ({ onPick, onClose }) => {
+  const [query, setQuery] = useState('');
+  const [hot, setHot] = useState(0);
+  const q = query.trim().toLowerCase();
+  const matches = PART_TYPE_KEYS.filter((k) => !q || PART_TYPES[k].label.toLowerCase().split(/\s+/).some((w) => w.startsWith(q)) || PART_TYPES[k].label.toLowerCase().startsWith(q));
+  const pick = (k?: PartType) => (k ? onPick(k) : onClose());
+  return (
+    <div className="absolute left-0 z-40 mt-1 w-[260px] bg-white rounded-xl shadow-lift p-1.5 animate-fade" onMouseDown={(e) => e.preventDefault()}>
+      <input
+        autoFocus
+        aria-label="Add a part"
+        value={query}
+        placeholder="Add a part…"
+        onChange={(e) => { setQuery(e.target.value); setHot(0); }}
+        onBlur={onClose}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowDown') { e.preventDefault(); setHot((h) => Math.min(h + 1, matches.length - 1)); }
+          else if (e.key === 'ArrowUp') { e.preventDefault(); setHot((h) => Math.max(h - 1, 0)); }
+          else if (e.key === 'Enter') { e.preventDefault(); pick(matches[hot]); }
+          else if (e.key === 'Escape' || (e.key === 'Backspace' && !query)) { e.preventDefault(); e.stopPropagation(); onClose(); }
+        }}
+        className="w-full px-2.5 py-1.5 text-[13px] rounded-lg bg-black/[0.04] focus:outline-none mb-1"
+      />
+      {matches.length === 0 && <p className="px-2.5 py-2 text-[13px] text-gray-400">No part type called "{query}"</p>}
+      <div className="max-h-[260px] overflow-y-auto">
+        {matches.map((k, i) => {
+          const { label, icon: Icon } = PART_TYPES[k];
+          return (
+            <button key={k} type="button" onMouseEnter={() => setHot(i)} onClick={() => pick(k)} className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13px] text-left ${i === hot ? 'bg-accent text-white' : 'text-gray-800'}`}>
+              <Icon className="w-4 h-4 shrink-0" />{label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 
@@ -85,6 +138,130 @@ const AddPart: React.FC<{ onAdd: (type: PartType) => void; quiet?: boolean }> = 
   );
 };
 
+// One part on the page. Its grip sits in the margin; "/" at the start of a line adds a part after it.
+const PartBlock: React.FC<{
+  part: Part;
+  accent: string;
+  time: string;
+  selected: boolean;
+  onSelect: () => void;
+  onChange: (patch: Partial<Part>) => void;
+  onAddAfter: (t: PartType) => void;
+}> = ({ part, accent, time, selected, onSelect, onChange, onAddAfter }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: part.id });
+  const [slash, setSlash] = useState<'do' | 'say' | null>(null);
+  const fields = { do: useRef<HTMLTextAreaElement>(null), say: useRef<HTMLTextAreaElement>(null) };
+  const { icon: Icon, label } = PART_TYPES[part.type];
+  const supplies = part.supplies.filter((s) => s.name.trim());
+  const onKey = (which: 'do' | 'say') => (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const el = e.currentTarget;
+    const atLineStart = el.selectionStart === el.selectionEnd && (el.selectionStart === 0 || el.value[el.selectionStart - 1] === '\n');
+    if (e.key === '/' && atLineStart) {
+      e.preventDefault();
+      setSlash(which);
+    }
+  };
+  const closeSlash = () => {
+    const which = slash;
+    setSlash(null);
+    if (which) requestAnimationFrame(() => fields[which].current?.focus());
+  };
+  const menu = (which: 'do' | 'say') => slash === which && (
+    <SlashMenu
+      onClose={closeSlash}
+      onPick={(t) => {
+        // The empty line the "/" was typed on goes away with it.
+        const key = which === 'do' ? 'instructions' : 'script';
+        if (/\s$/.test(part[key])) onChange({ [key]: part[key].replace(/\s+$/, '') });
+        setSlash(null);
+        onAddAfter(t);
+      }}
+    />
+  );
+
+  return (
+    <div
+      ref={setNodeRef}
+      id={`part-${part.id}`}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      onMouseDown={() => !selected && onSelect()}
+      className={`group/part scroll-mt-24 relative -mx-4 px-4 py-4 rounded-xl transition-colors ${isDragging ? 'z-20 bg-white shadow-lift ring-1 ring-black/5' : selected ? 'bg-accent/[0.045] ring-1 ring-accent/25' : 'hover:bg-black/[0.018]'} ${part.hidden ? 'opacity-45' : ''} ${part.optional ? 'border-l-2 border-dashed border-gray-300' : ''}`}
+    >
+      <button
+        type="button"
+        aria-label={`Move ${part.title}`}
+        title="Drag to move"
+        className={`absolute -left-3 top-6 p-1 rounded-md text-gray-400 hover:text-ink hover:bg-black/[0.05] cursor-grab active:cursor-grabbing touch-none transition-opacity ${selected || isDragging ? 'opacity-100' : 'opacity-0 group-hover/part:opacity-100 focus:opacity-100'}`}
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="w-4 h-4" />
+      </button>
+      <div className={GUTTER}>
+        <span className="pt-6 text-[11px] leading-tight text-gray-400 text-right tabular-nums">
+          <b className="block font-semibold text-gray-500">{time}</b>
+          {part.minutes} min
+        </span>
+        <div className="min-w-0">
+          <p className="flex items-center gap-1 text-[10px] font-semibold tracking-[0.16em] uppercase mb-0.5" style={{ color: accent }}>
+            <Icon className="w-3 h-3" />{label}{part.optional && ' · going deeper'}
+          </p>
+          <input
+            aria-label="Part title"
+            value={part.title}
+            onChange={(e) => onChange({ title: e.target.value })}
+            className="w-full bg-transparent font-display text-[19px] font-semibold tracking-[-0.012em] focus:outline-none"
+          />
+        </div>
+      </div>
+
+      {supplies.length > 0 && (
+        <div className={`${GUTTER} mt-2`}>
+          <MarginLabel>Need</MarginLabel>
+          <p className="text-[13px] text-gray-600">
+            {supplies.map((s, i) => (
+              <span key={s.id}>{i > 0 && <span className="text-gray-300 mx-1.5">·</span>}<b className="font-semibold tabular-nums" style={{ color: accent }}>{s.qty}</b> {s.name}</span>
+            ))}
+          </p>
+        </div>
+      )}
+
+      {(part.instructions || selected) && (
+        <div className={`${GUTTER} mt-3`}>
+          <MarginLabel>Do</MarginLabel>
+          <div className="relative">
+            <PageText ref={fields.do} show label="What the leader does" value={part.instructions} onChange={(instructions) => onChange({ instructions })} onKeyDown={onKey('do')} placeholder="What the leader does: setup, how to run it, how to wrap up." className="text-[14px] leading-relaxed text-gray-700" />
+            {menu('do')}
+          </div>
+        </div>
+      )}
+
+      {(part.script || selected) && (
+        <div className={`${GUTTER} mt-3`}>
+          <MarginLabel>Say</MarginLabel>
+          <div className="relative border-l-2 pl-4" style={{ borderColor: accent }}>
+            <PageText ref={fields.say} show label="What the leader says" value={part.script} onChange={(script) => onChange({ script })} onKeyDown={onKey('say')} placeholder="What the leader says, word for word. [Brackets] for actions. Type / on a new line to add a part." className="text-[16px] leading-[1.6] text-ink font-['Source_Serif_4_Variable',Georgia,serif]" />
+            {menu('say')}
+          </div>
+        </div>
+      )}
+
+      {part.inclusionTips.trim() && (
+        <div className={`${GUTTER} mt-3`}>
+          <MarginLabel>Every kid</MarginLabel>
+          <p className="text-[13px] leading-relaxed text-emerald-800 bg-emerald-500/[0.07] rounded-lg px-3 py-2 whitespace-pre-line">{part.inclusionTips}</p>
+        </div>
+      )}
+      {part.leaderNotes.trim() && (
+        <div className={`${GUTTER} mt-3`}>
+          <MarginLabel>Note</MarginLabel>
+          <p className="text-[13px] leading-relaxed text-amber-900 bg-amber-500/[0.08] rounded-lg px-3 py-2 whitespace-pre-line">{part.leaderNotes}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 interface Props {
   service: Service;
   series?: Series;
@@ -108,7 +285,7 @@ export const WriteView: React.FC<Props> = ({ service, series, schedule, update, 
     return () => window.removeEventListener('parable:open-part', onOpen);
   }, [service.sections]);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setSel(null);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && !(e.target as HTMLElement)?.closest?.('[aria-label="Add a part"]') && setSel(null);
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
@@ -123,6 +300,38 @@ export const WriteView: React.FC<Props> = ({ service, series, schedule, update, 
     });
     setSel({ kind: 'part', sectionId: section.id, partId: part.id });
     setTimeout(() => document.querySelector<HTMLInputElement>(`#part-${part.id} input`)?.select(), 60);
+  };
+
+  // Drag a part by its grip: within its section, or onto a part in another section.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  const onDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+    update((s) => {
+      const from = s.sections.find((sec) => sec.parts.some((p) => p.id === active.id));
+      const to = s.sections.find((sec) => sec.parts.some((p) => p.id === over.id));
+      if (!from || !to) return s;
+      const moving = from.parts.find((p) => p.id === active.id)!;
+      if (from.id === to.id) {
+        const a = from.parts.findIndex((p) => p.id === active.id);
+        const b = from.parts.findIndex((p) => p.id === over.id);
+        return { ...s, sections: s.sections.map((sec) => (sec.id === from.id ? { ...sec, parts: arrayMove(sec.parts, a, b) } : sec)) };
+      }
+      const at = to.parts.findIndex((p) => p.id === over.id);
+      return {
+        ...s,
+        sections: s.sections.map((sec) =>
+          sec.id === from.id ? { ...sec, parts: sec.parts.filter((p) => p.id !== active.id) }
+          : sec.id === to.id ? { ...sec, parts: [...sec.parts.slice(0, at), moving, ...sec.parts.slice(at)] }
+          : sec),
+      };
+    });
+    if (sel?.kind === 'part' && sel.partId === active.id) {
+      const to = service.sections.find((sec) => sec.parts.some((p) => p.id === over.id));
+      if (to) setSel({ kind: 'part', sectionId: to.id, partId: String(active.id) });
+    }
   };
 
   const eyebrow = [series && service.week ? `Week ${service.week}` : '', series?.title ?? '', service.audience].filter(Boolean).join(' · ');
@@ -145,6 +354,7 @@ export const WriteView: React.FC<Props> = ({ service, series, schedule, update, 
             </div>
           </header>
 
+          <DndContext sensors={sensors} collisionDetection={pointerFirst} onDragEnd={onDragEnd} modifiers={[restrictToVerticalAxis]}>
           {service.sections.map((section, si) => {
             const sectionSelected = sel?.kind === 'section' && sel.id === section.id;
             return (
@@ -171,83 +381,26 @@ export const WriteView: React.FC<Props> = ({ service, series, schedule, update, 
                   </div>
                 </div>
 
-                {section.parts.map((part) => {
-                  const selected = sel?.kind === 'part' && sel.partId === part.id;
-                  const { icon: Icon, label } = PART_TYPES[part.type];
-                  const set = (patch: Partial<Part>) => setPart(section.id, part.id, (p) => ({ ...p, ...patch }));
-                  const supplies = part.supplies.filter((s) => s.name.trim());
-                  return (
-                    <div
+                <SortableContext items={section.parts.map((p) => p.id)} strategy={verticalListSortingStrategy}>
+                  {section.parts.map((part) => (
+                    <PartBlock
                       key={part.id}
-                      id={`part-${part.id}`}
-                      onMouseDown={() => !selected && setSel({ kind: 'part', sectionId: section.id, partId: part.id })}
-                      className={`scroll-mt-24 relative -mx-4 px-4 py-4 rounded-xl transition-colors ${selected ? 'bg-accent/[0.045] ring-1 ring-accent/25' : 'hover:bg-black/[0.018]'} ${part.hidden ? 'opacity-45' : ''} ${part.optional ? 'border-l-2 border-dashed border-gray-300' : ''}`}
-                    >
-                      <div className={GUTTER}>
-                        <span className="pt-6 text-[11px] leading-tight text-gray-400 text-right tabular-nums">
-                          <b className="block font-semibold text-gray-500">{part.optional ? 'Extra' : schedule[part.id] ?? ''}</b>
-                          {part.minutes} min
-                        </span>
-                        <div className="min-w-0">
-                          <p className="flex items-center gap-1 text-[10px] font-semibold tracking-[0.16em] uppercase mb-0.5" style={{ color: accent }}>
-                            <Icon className="w-3 h-3" />{label}{part.optional && ' · going deeper'}
-                          </p>
-                          <input
-                            aria-label="Part title"
-                            value={part.title}
-                            onChange={(e) => set({ title: e.target.value })}
-                            className="w-full bg-transparent font-display text-[19px] font-semibold tracking-[-0.012em] focus:outline-none"
-                          />
-                        </div>
-                      </div>
-
-                      {supplies.length > 0 && (
-                        <div className={`${GUTTER} mt-2`}>
-                          <MarginLabel>Need</MarginLabel>
-                          <p className="text-[13px] text-gray-600">
-                            {supplies.map((s, i) => (
-                              <span key={s.id}>{i > 0 && <span className="text-gray-300 mx-1.5">·</span>}<b className="font-semibold tabular-nums" style={{ color: accent }}>{s.qty}</b> {s.name}</span>
-                            ))}
-                          </p>
-                        </div>
-                      )}
-
-                      {(part.instructions || selected) && (
-                        <div className={`${GUTTER} mt-3`}>
-                          <MarginLabel>Do</MarginLabel>
-                          <PageText show label="What the leader does" value={part.instructions} onChange={(instructions) => set({ instructions })} placeholder="What the leader does: setup, how to run it, how to wrap up." className="text-[14px] leading-relaxed text-gray-700" />
-                        </div>
-                      )}
-
-                      {(part.script || selected) && (
-                        <div className={`${GUTTER} mt-3`}>
-                          <MarginLabel>Say</MarginLabel>
-                          <div className="border-l-2 pl-4" style={{ borderColor: accent }}>
-                            <PageText show label="What the leader says" value={part.script} onChange={(script) => set({ script })} placeholder="What the leader says, word for word. [Brackets] for actions." className="text-[16px] leading-[1.6] text-ink font-['Source_Serif_4_Variable',Georgia,serif]" />
-                          </div>
-                        </div>
-                      )}
-
-                      {part.inclusionTips.trim() && (
-                        <div className={`${GUTTER} mt-3`}>
-                          <MarginLabel>Every kid</MarginLabel>
-                          <p className="text-[13px] leading-relaxed text-emerald-800 bg-emerald-500/[0.07] rounded-lg px-3 py-2 whitespace-pre-line">{part.inclusionTips}</p>
-                        </div>
-                      )}
-                      {part.leaderNotes.trim() && (
-                        <div className={`${GUTTER} mt-3`}>
-                          <MarginLabel>Note</MarginLabel>
-                          <p className="text-[13px] leading-relaxed text-amber-900 bg-amber-500/[0.08] rounded-lg px-3 py-2 whitespace-pre-line">{part.leaderNotes}</p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                      part={part}
+                      accent={accent}
+                      time={part.optional ? 'Extra' : schedule[part.id] ?? ''}
+                      selected={sel?.kind === 'part' && sel.partId === part.id}
+                      onSelect={() => setSel({ kind: 'part', sectionId: section.id, partId: part.id })}
+                      onChange={(patch) => setPart(section.id, part.id, (p) => ({ ...p, ...patch }))}
+                      onAddAfter={(t) => addPart(section, t, part.id)}
+                    />
+                  ))}
+                </SortableContext>
 
                 <div className="mt-2"><AddPart quiet={section.parts.length > 0} onAdd={(t) => addPart(section, t)} /></div>
               </section>
             );
           })}
+          </DndContext>
 
           <div className={GUTTER}>
             <span />
