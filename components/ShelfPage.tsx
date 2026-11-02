@@ -9,6 +9,7 @@ import { navigate } from '../lib/route';
 import { useStore } from '../store/StoreContext';
 import { NewSeriesDialog, NewServiceDialog } from './NewServiceDialog';
 import { CoverThumb } from './print/PrintView';
+import { designOf, resolvePalette } from '../lib/design';
 import { Button, EmptyState, Menu, MenuItem, inputClass } from './ui';
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
@@ -68,7 +69,7 @@ export const ShelfPage: React.FC = () => {
     <div className="max-w-6xl mx-auto px-4 md:px-6 pb-24">
       <section className="py-8 md:py-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-display">Your shelf</h1>
+          <h1 className="text-[34px] leading-tight font-display">Your shelf</h1>
           <p className="text-gray-500 mt-1">Each series is a book. Write it once, teach it whenever you want.</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -84,14 +85,17 @@ export const ShelfPage: React.FC = () => {
 
       {recent.length > 0 && !q && (
         <section className="mb-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-2">Pick up where you left off</h2>
-          <div className="flex flex-wrap gap-2">
+          <h2 className="text-[20px] font-display mb-3">Continue</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
             {recent.map((s) => {
               const series = s.seriesId ? db.series.find((x) => x.id === s.seriesId) : undefined;
               return (
-                <button key={s.id} type="button" onClick={() => navigate(`/s/${s.id}`)} className="text-left bg-white border border-line rounded-xl px-3 py-2 hover:border-gray-300 min-w-0 max-w-full">
-                  <span className="block text-sm font-semibold truncate">{s.title}</span>
-                  <span className="block text-xs text-gray-500 truncate">{series ? `${series.title} · lesson ${s.week}` : 'Stand-alone'} · {timeAgo(s.updatedAt)}</span>
+                <button key={s.id} type="button" onClick={() => navigate(`/s/${s.id}`)} className="text-left bg-white shadow-card rounded-xl pl-3 pr-4 py-2.5 hover:-translate-y-0.5 transition-transform min-w-[190px] max-w-[260px] flex items-center gap-3 shrink-0">
+                  <span className="w-1 self-stretch rounded-full shrink-0" style={{ background: series ? resolvePalette(designOf(series)).accent : '#86868B' }} />
+                  <span className="min-w-0">
+                  <span className="block text-[14px] font-semibold truncate">{s.title}</span>
+                  <span className="block text-[12px] text-gray-500 truncate">{series ? `${series.title} · lesson ${s.week}` : 'Stand-alone'} · {timeAgo(s.updatedAt)}</span>
+                  </span>
                 </button>
               );
             })}
@@ -115,33 +119,34 @@ export const ShelfPage: React.FC = () => {
         </div>
       ) : (
         <>
-          <ul className="grid grid-cols-[repeat(auto-fill,minmax(168px,1fr))] gap-x-6 gap-y-8 mb-12">
+          <h2 className="text-[20px] font-display mb-4">Series</h2>
+          <ul className="grid grid-cols-[repeat(auto-fill,minmax(184px,1fr))] gap-x-8 gap-y-10 mb-12">
             {books.map(({ series, lessons }) => {
               const status = seriesStatus(series, lessons);
               return (
                 <li key={series.id}>
                   <a href={`#/series/${series.id}`} className="group block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4">
-                    <div className="w-[168px] rounded-[4px] overflow-hidden shadow-[0_1px_0_rgba(0,0,0,0.06),0_10px_24px_rgba(22,22,29,0.14)] group-hover:-translate-y-1 transition-transform">
-                      <CoverThumb series={series} weeks={lessons} width={168} />
+                    <div className="w-[184px] rounded-[6px] overflow-hidden shadow-[0_0_0_0.5px_rgba(0,0,0,0.08),0_2px_4px_rgba(0,0,0,0.06),0_18px_36px_-12px_rgba(0,0,0,0.35)] group-hover:-translate-y-1 group-hover:shadow-[0_0_0_0.5px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.08),0_28px_48px_-14px_rgba(0,0,0,0.4)] transition-[transform,box-shadow] duration-300">
+                      <CoverThumb series={series} weeks={lessons} width={184} />
                     </div>
-                    <span className="block mt-3 font-semibold group-hover:text-accent">{series.title}</span>
-                    <span className="block text-sm text-gray-500">{lessons.length} lesson{lessons.length === 1 ? '' : 's'} · {series.audience}</span>
+                    <span className="block mt-3.5 text-[15px] font-semibold">{series.title}</span>
+                    <span className="block text-[13px] text-gray-500">{lessons.length} lesson{lessons.length === 1 ? '' : 's'} · {series.audience}</span>
                   </a>
-                  <span className={`inline-block mt-2 text-xs font-semibold px-2 py-0.5 rounded-full ${status.tone}`}>{status.label}</span>
+                  <span className={`inline-block mt-2 text-[11px] font-semibold px-2 py-0.5 rounded-full ${status.tone}`}>{status.label}</span>
                 </li>
               );
             })}
             <li>
-              <button type="button" onClick={() => setSeriesOpen(true)} className="w-[168px] h-[217px] rounded-[4px] border-2 border-dashed border-gray-300 text-gray-500 hover:text-ink hover:border-gray-400 flex flex-col items-center justify-center gap-2 font-semibold">
-                <Plus className="w-6 h-6" /> New series
+              <button type="button" onClick={() => setSeriesOpen(true)} className="w-[184px] h-[238px] rounded-[6px] bg-black/[0.04] hover:bg-black/[0.07] text-gray-600 hover:text-ink flex flex-col items-center justify-center gap-3 text-[14px] font-medium transition-colors">
+                <span className="w-11 h-11 rounded-full bg-white shadow-card flex items-center justify-center text-accent"><Plus className="w-5 h-5" /></span> New series
               </button>
             </li>
           </ul>
 
           {standalone.length > 0 && (
             <section className="mb-10">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">Stand-alone lessons</h2>
-              <ul className="bg-white border border-line rounded-xl divide-y divide-line">
+              <h2 className="text-[20px] font-display mb-3">Stand-alone lessons</h2>
+              <ul className="bg-white shadow-card rounded-xl divide-y divide-black/[0.06]">
                 {standalone.map((s) => (
                   <li key={s.id} className="flex items-center gap-3 px-4 py-3">
                     <a href={`#/s/${s.id}`} className="flex-1 min-w-0 hover:text-accent">
