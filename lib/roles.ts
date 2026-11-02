@@ -29,6 +29,8 @@ export const smallGroupGuide = (service: Service) => {
   const activities = parts.filter((p) => !used.has(p) && (p.instructions.trim() || p.script.trim() || p.supplies.length));
   return {
     has: parts.length > 0,
+    // The parts behind each piece, so Write mode can edit them in place.
+    from: { icebreaker, prayer, challenge, discussion },
     icebreaker: text(icebreaker),
     prayer: text(prayer),
     questions: discussion.flatMap((p) => listItems(p.script)),

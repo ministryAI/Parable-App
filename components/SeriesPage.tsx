@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DndContext, DragEndEvent, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -16,6 +16,7 @@ import { ColorPicker, NewServiceDialog } from './NewServiceDialog';
 import { DesignDialog } from './DesignDialog';
 import { seriesStatus } from './ShelfPage';
 import { BookPreview, CoverThumb } from './print/PrintView';
+import { EditContext, useEditApi } from './print/editable';
 import { Button, EmptyState, Label, Menu, MenuDivider, MenuItem, Meter, TextArea, inputClass } from './ui';
 
 type View = 'lessons' | 'book' | 'teach';
@@ -23,14 +24,17 @@ const VIEW_KEY = 'parable.seriesView';
 // Section colors for the "shape of the lesson" bars, by position.
 const SHAPE = ['#FDBA74', '#7DD3FC', '#A5B4FC', '#86EFAC', '#F9A8D4', '#FDE68A', '#C4B5FD'];
 
-export const SeriesPage: React.FC<{ seriesId: string }> = ({ seriesId }) => {
+export const SeriesPage: React.FC<{ seriesId: string; view?: 'book' }> = ({ seriesId, view: asked }) => {
   const { db, updateSeries, deleteSeries, addSeries, print, toast } = useStore();
   const series = db.series.find((s) => s.id === seriesId);
   const [addOpen, setAddOpen] = useState(false);
   const [designOpen, setDesignOpen] = useState(false);
   const [view, setViewState] = useState<View>(() => {
+    if (asked) return asked;
     try { const v = localStorage.getItem(VIEW_KEY); return v === 'book' || v === 'teach' ? v : 'lessons'; } catch { return 'lessons'; }
   });
+  useEffect(() => { if (asked) setViewState(asked); }, [asked]);
+  const bookEdit = useEditApi();
   const setView = (v: View) => {
     setViewState(v);
     try { localStorage.setItem(VIEW_KEY, v); } catch { /* preference only */ }
@@ -124,15 +128,10 @@ export const SeriesPage: React.FC<{ seriesId: string }> = ({ seriesId }) => {
           {view === 'lessons' && <LessonsTab series={series} lessons={lessons} onAdd={() => setAddOpen(true)} />}
           {view === 'book' && (
             <>
-              <p className="text-xs text-gray-500 mb-3">The whole printed book. Click a part to edit it. Exact page breaks show when you print.</p>
-              <BookPreview
-                series={series}
-                weeks={lessons}
-                onPartClick={(partId) => {
-                  const lesson = lessons.find((w) => w.sections.some((sec) => sec.parts.some((p) => p.id === partId)));
-                  if (lesson) navigate(`/s/${lesson.id}/p/${partId}`);
-                }}
-              />
+              <p className="text-[13px] text-gray-500 mb-3">The whole printed book, exactly as it prints. Click any words to change them: the cover, the welcome letter, every lesson. Open a lesson for its parts' details.</p>
+              <EditContext.Provider value={bookEdit}>
+                <BookPreview series={series} weeks={lessons} />
+              </EditContext.Provider>
             </>
           )}
           {view === 'teach' && <RunsTab series={series} lessons={lessons} />}

@@ -71,7 +71,7 @@ const Shell: React.FC = () => {
         <main>
           {route.name === 'service' && <ServiceEditor key={route.id} serviceId={route.id} focusPartId={route.partId} />}
           {route.name === 'series-list' && <ShelfPage />}
-          {route.name === 'series' && <SeriesPage key={route.id} seriesId={route.id} />}
+          {route.name === 'series' && <SeriesPage key={route.id} seriesId={route.id} view={route.view} />}
           {route.name === 'library' && <LibraryPage />}
           {route.name === 'studio' && <StudioPage />}
           {route.name === 'home' && <ShelfPage />}

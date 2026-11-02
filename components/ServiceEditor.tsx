@@ -247,7 +247,7 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
       </div>
 
       {pref.mode === 'write' ? (
-        <WriteView service={service} series={series} schedule={schedule} update={update} actions={actions} />
+        <WriteView service={service} series={series} update={update} actions={actions} />
       ) : (<>
       <header className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
         <div className="flex-1 min-w-0">

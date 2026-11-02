@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 export type Route =
   | { name: 'home' }
   | { name: 'series-list' }
-  | { name: 'series'; id: string }
+  | { name: 'series'; id: string; view?: 'book' }
   | { name: 'library' }
   | { name: 'studio' }
   | { name: 'service'; id: string; partId?: string };
@@ -11,6 +11,8 @@ export type Route =
 const parse = (hash: string): Route => {
   const match = /^#\/s\/([^/]+)(?:\/p\/(.+))?$/.exec(hash);
   if (match) return { name: 'service', id: decodeURIComponent(match[1]), partId: match[2] && decodeURIComponent(match[2]) };
+  const book = /^#\/series\/([^/]+)\/book$/.exec(hash);
+  if (book) return { name: 'series', id: decodeURIComponent(book[1]), view: 'book' };
   const series = /^#\/series\/(.+)$/.exec(hash);
   if (series) return { name: 'series', id: decodeURIComponent(series[1]) };
   if (hash === '#/series' || hash === '#/services') return { name: 'series-list' };
