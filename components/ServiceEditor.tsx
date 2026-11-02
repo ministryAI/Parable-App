@@ -61,15 +61,45 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
     setPref(merged);
     try { localStorage.setItem(PREVIEW_KEY, JSON.stringify(merged)); } catch { /* preference only */ }
   };
+  const savePrefRef = React.useRef(savePref);
+  savePrefRef.current = savePref;
   const previewService = useDeferredValue(service);
   const previewRef = React.useRef<HTMLDivElement>(null);
-  // Editing a part scrolls the preview to where that part prints.
-  const followInPreview = (e: React.FocusEvent) => {
+  // Whatever part you open, click or type in, the preview shows where it prints, and briefly lights it up.
+  // Clicks count as well as focus: Safari doesn't focus a button when you click it.
+  const liveRef = React.useRef({ pref, service });
+  liveRef.current = { pref, service };
+  const showInPreview = React.useCallback((partId: string) => {
+    const { pref: p, service: svc } = liveRef.current;
+    if (!p.on || p.panel !== 'preview' || !svc) return;
+    const find = () => {
+      const box = previewRef.current;
+      if (!box) return null;
+      const direct = box.querySelector<HTMLElement>(`[data-part="${partId}"]`);
+      if (direct) return direct;
+      // Small group parts print on the small group guide page, not one by one.
+      const section = svc.sections.find((sec) => sec.parts.some((part) => part.id === partId));
+      return section?.role === 'small' ? box.querySelector<HTMLElement>('.pr-sg') : null;
+    };
+    const go = (el: HTMLElement) => {
+      const box = previewRef.current!;
+      box.scrollTo({ top: box.scrollTop + el.getBoundingClientRect().top - box.getBoundingClientRect().top - 24, behavior: 'smooth' });
+      el.classList.remove('pv-flash');
+      void el.offsetWidth;
+      el.classList.add('pv-flash');
+      setTimeout(() => el.classList.remove('pv-flash'), 1600);
+    };
+    const el = find();
+    if (el) go(el);
+    else if (p.kind !== 'week') {
+      // The part isn't on the pages being previewed (say, Family): switch to the whole lesson, then show it.
+      savePrefRef.current({ kind: 'week' });
+      setTimeout(() => { const later = find(); if (later) go(later); }, 300);
+    }
+  }, []);
+  const followInPreview = (e: React.SyntheticEvent) => {
     const id = (e.target as HTMLElement).closest<HTMLElement>('[id^="part-"]')?.id.slice(5);
-    const box = previewRef.current;
-    const el = id && box?.querySelector<HTMLElement>(`[data-part="${id}"]`);
-    if (!box || !el) return;
-    box.scrollTo({ top: box.scrollTop + el.getBoundingClientRect().top - box.getBoundingClientRect().top - 24, behavior: 'smooth' });
+    if (id) showInPreview(id);
   };
 
   // Arriving from a dashboard link: expand that part's section and scroll to it.
@@ -156,6 +186,7 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
     setOpenPartIds((ids) => new Set([...ids, partId]));
     jumpToPart(partId);
     setTimeout(() => window.dispatchEvent(new CustomEvent('parable:open-part', { detail: partId })), 50);
+    setTimeout(() => showInPreview(partId), 120);
   };
   openPartRef.current = openPart;
   const jumpToPart = (partId: string) => {
@@ -227,7 +258,7 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
           : pref.on ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[210px_minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[230px_minmax(0,5fr)_minmax(0,6fr)]' : 'lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[210px_minmax(0,1fr)_380px]'
       }`}>
         {!sidebarShown && <Outline service={service} lessons={series ? weeksOf(db, series.id) : [service]} onPart={openPart} />}
-        <div className="space-y-4" onFocus={pref.on ? followInPreview : undefined}>
+        <div className="space-y-4" onFocus={pref.on ? followInPreview : undefined} onClick={pref.on ? followInPreview : undefined}>
           {service.sections.length === 0 && (
             <div className="border-2 border-dashed border-gray-300 rounded-xl">
               <EmptyState icon={LayoutList} title="This lesson is empty">Add a section like "Worship" or "Small Groups", then add parts to it.</EmptyState>

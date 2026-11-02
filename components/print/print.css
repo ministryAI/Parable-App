@@ -396,6 +396,9 @@
 .pr-preview [data-part] { cursor: pointer; border-radius: 6px; transition: background 0.15s; }
 .pr-preview [data-part]:hover { background: rgba(99, 102, 241, 0.06); }
 @media print { .pv-outer { display: none; } }
+/* The part you just opened lights up in the preview. */
+@keyframes pv-flash { 0%, 35% { background-color: rgb(0 113 227 / 0.13); box-shadow: 0 0 0 6px rgb(0 113 227 / 0.13); } 100% { background-color: transparent; box-shadow: 0 0 0 6px transparent; } }
+.pr-preview .pv-flash { animation: pv-flash 1.6s ease-out; border-radius: 6px; }
 
 /* ---------- Design switches ---------- */
 .pr { color: var(--ink); }
