@@ -5,6 +5,7 @@ export type Route =
   | { name: 'series-list' }
   | { name: 'series'; id: string }
   | { name: 'library' }
+  | { name: 'studio' }
   | { name: 'service'; id: string; partId?: string };
 
 const parse = (hash: string): Route => {
@@ -14,6 +15,7 @@ const parse = (hash: string): Route => {
   if (series) return { name: 'series', id: decodeURIComponent(series[1]) };
   if (hash === '#/series' || hash === '#/services') return { name: 'series-list' };
   if (hash === '#/library') return { name: 'library' };
+  if (hash === '#/studio') return { name: 'studio' };
   return { name: 'home' };
 };
 

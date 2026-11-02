@@ -231,11 +231,11 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
         {pref.on ? (
           <div className="hidden lg:flex flex-col gap-3 lg:sticky lg:top-[76px] lg:h-[calc(100vh-92px)]">
             <div className="flex items-center gap-2 shrink-0">
-              <div role="tablist" aria-label="Right panel" className="inline-flex bg-white border border-line rounded-lg p-0.5">
-                <button type="button" role="tab" aria-selected={pref.panel === 'preview'} onClick={() => savePref({ panel: 'preview' })} className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md ${pref.panel === 'preview' ? 'bg-accent text-white font-semibold' : 'text-gray-600 hover:text-ink'}`}>
+              <div role="tablist" aria-label="Right panel" className="segmented">
+                <button type="button" role="tab" aria-selected={pref.panel === 'preview'} onClick={() => savePref({ panel: 'preview' })} >
                   <Eye className="w-4 h-4" /> Preview
                 </button>
-                <button type="button" role="tab" aria-selected={pref.panel === 'details'} onClick={() => savePref({ panel: 'details' })} className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md ${pref.panel === 'details' ? 'bg-accent text-white font-semibold' : 'text-gray-600 hover:text-ink'}`}>
+                <button type="button" role="tab" aria-selected={pref.panel === 'details'} onClick={() => savePref({ panel: 'details' })} >
                   <PanelRight className="w-4 h-4" /> Details
                 </button>
               </div>
