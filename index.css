@@ -81,6 +81,12 @@
     -webkit-backdrop-filter: saturate(180%) blur(20px);
     backdrop-filter: saturate(180%) blur(20px);
   }
+  /* The sidebar's frosted gray, like Finder and Notes. */
+  .sidebar-material {
+    background-color: rgb(232 232 237 / 0.72);
+    -webkit-backdrop-filter: saturate(180%) blur(30px);
+    backdrop-filter: saturate(180%) blur(30px);
+  }
   /* Segmented control (like the one in Finder and Photos). */
   .segmented { display: inline-flex; padding: 2px; gap: 2px; border-radius: 9px; background: rgb(118 118 128 / 0.12); }
   .segmented > button {

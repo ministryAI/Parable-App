@@ -8,6 +8,7 @@ import { COLOR_CLASSES, weeksOf } from '../lib/series';
 import { buildElapsed, formatDuration, serviceMinutes, visibleParts } from '../lib/time';
 import { downloadJson, slug } from '../lib/files';
 import { navigate } from '../lib/route';
+import { JUMP_EVENT, useSidebarShown } from '../lib/sidebar';
 import { useStore } from '../store/StoreContext';
 import { restrictToVerticalAxis } from './dndModifiers';
 import { SectionActions, SectionCard } from './SectionCard';
@@ -33,6 +34,14 @@ const readPref = <T,>(fallback: T): T => {
 };
 
 export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }> = ({ serviceId, focusPartId }) => {
+  const sidebarShown = useSidebarShown();
+  // The sidebar's part links land here.
+  const openPartRef = React.useRef<(partId: string) => void>(() => {});
+  useEffect(() => {
+    const onJump = (e: Event) => openPartRef.current((e as CustomEvent<string>).detail);
+    window.addEventListener(JUMP_EVENT, onJump);
+    return () => window.removeEventListener(JUMP_EVENT, onJump);
+  }, []);
   const { db, updateService, addServices, addWeeks, deleteService, toast, print } = useStore();
   const found = db.services.find((s) => s.id === serviceId);
   const series = found?.seriesId ? db.series.find((s) => s.id === found.seriesId) : undefined;
@@ -148,6 +157,7 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
     jumpToPart(partId);
     setTimeout(() => window.dispatchEvent(new CustomEvent('parable:open-part', { detail: partId })), 50);
   };
+  openPartRef.current = openPart;
   const jumpToPart = (partId: string) => {
     const section = service.sections.find((s) => s.parts.some((p: Part) => p.id === partId));
     if (section?.collapsed) actions.updateSection(section.id, (s) => ({ ...s, collapsed: false }));
@@ -211,8 +221,12 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
         </div>
       </header>
 
-      <div className={`grid grid-cols-1 gap-6 items-start ${pref.on ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[210px_minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[230px_minmax(0,5fr)_minmax(0,6fr)]' : 'lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[210px_minmax(0,1fr)_380px]'}`}>
-        <Outline service={service} lessons={series ? weeksOf(db, series.id) : [service]} onPart={openPart} />
+      <div className={`grid grid-cols-1 gap-6 items-start ${
+        sidebarShown
+          ? pref.on ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]' : 'lg:grid-cols-[minmax(0,1fr)_380px]'
+          : pref.on ? 'lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[210px_minmax(0,1fr)_minmax(0,1fr)] 2xl:grid-cols-[230px_minmax(0,5fr)_minmax(0,6fr)]' : 'lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[210px_minmax(0,1fr)_380px]'
+      }`}>
+        {!sidebarShown && <Outline service={service} lessons={series ? weeksOf(db, series.id) : [service]} onPart={openPart} />}
         <div className="space-y-4" onFocus={pref.on ? followInPreview : undefined}>
           {service.sections.length === 0 && (
             <div className="border-2 border-dashed border-gray-300 rounded-xl">
