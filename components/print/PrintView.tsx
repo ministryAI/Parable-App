@@ -11,7 +11,7 @@ import { forPrint, formatWhen, weeksOf } from '../../lib/series';
 import { cueSegments, listItems, looksLikeList, paragraphs, stripCues } from '../../lib/text';
 import { qrPath } from '../../lib/qr';
 import { useStore } from '../../store/StoreContext';
-import { Accessibility, Car, Layers, Compass, HelpCircle, ListChecks, MessageSquareQuote, Monitor, Moon, Package, Pointer, Quote, Sparkles, StickyNote, Sunrise, Target, Timer, Users, Utensils } from 'lucide-react';
+import { Car, Layers, Compass, HelpCircle, ListChecks, MessageSquareQuote, Moon, Package, Pointer, Quote, Sparkles, StickyNote, Sunrise, Target, Timer, Users, Utensils } from 'lucide-react';
 import { engagement, FAMILY_LABELS, familyCues, sectionsFor, smallGroupGuide } from '../../lib/roles';
 import { FamilyCues } from '../../types';
 import { partReady } from '../../lib/readiness';
@@ -100,7 +100,9 @@ const SeriesBook: React.FC<{ kind: SeriesKind | string; series: Series; weeks: S
     {(kind === 'series-book' || kind === 'series') && (
       <>
         <SeriesCover series={series} weeks={weeks} />
+        <BlankPage />
         <Divider series={series} uid={`lg-${series.id}`} icon={Compass} kicker="Start here" title="Leader guide" sub={`${weeks.length} weeks · ${series.audience}`} />
+        <BlankPage />
         <LeaderGuide series={series} weeks={weeks} />
       </>
     )}
@@ -362,6 +364,9 @@ const SeriesCover: React.FC<{ series: Series; weeks: Service[] }> = ({ series, w
   );
 };
 
+// The back of a title page: printed books leave it blank so the next page starts fresh.
+const BlankPage: React.FC = () => <section className="pr-blank" aria-hidden="true" />;
+
 // Full-bleed section opener, like a chapter page.
 const Divider: React.FC<{ series?: Series; uid: string; icon: React.ElementType; kicker: string; title: string; sub?: string; idea?: string }> = ({ series, uid, icon: Icon, kicker, title, sub, idea }) => {
   const box = designOf(series).divider.titleBox;
@@ -390,8 +395,6 @@ const LEGEND: [React.ElementType, string, string][] = [
   [Pointer, 'Instructions', 'what the leader does'],
   [MessageSquareQuote, 'Say', 'a script to read or put in your own words'],
   [HelpCircle, 'Questions', 'to ask the group'],
-  [Monitor, 'Show on screen', 'scan the code to open the song or video'],
-  [Accessibility, 'Every kid can join', 'ways to adapt for different needs'],
   [Layers, 'Going deeper', 'optional extras if you have time'],
 ];
 
@@ -447,6 +450,7 @@ const FullWeek: React.FC<{ service: Service; series?: Series; divider?: boolean 
         idea={service.bigIdea}
       />
     )}
+    {divider && <BlankPage />}
     <Lesson service={service} series={series} />
     <SmallGroupPage service={service} series={series} />
     <FamilyPage service={service} series={series} />
@@ -607,9 +611,24 @@ const SessionOverview: React.FC<{ service: Service; series?: Series; schedule: R
   );
 };
 
+const SgStep: React.FC<{ n: number; label: string; tone?: string; children: React.ReactNode }> = ({ n, label, tone, children }) => (
+  <div className="pr-sg-step">
+    <span className="pr-sg-n">{n}</span>
+    <div>
+      <p className={`pr-sg-kicker ${tone ?? ''}`}>{label}</p>
+      {children}
+    </div>
+  </div>
+);
+
+// A small group leader follows it top to bottom: open, discuss and apply (together), pray.
+// The lesson's big idea and verse are already on the large group pages, so they're not repeated here.
 const SmallGroupPage: React.FC<{ service: Service; series?: Series }> = ({ service, series }) => {
   const g = smallGroupGuide(service);
   if (!g.has) return null;
+  const hasTalk = g.questions.length > 0 || !!g.challenge;
+  const order = [g.icebreaker && 'open', hasTalk && 'talk', g.prayer && 'pray'].filter(Boolean);
+  const n = (key: string) => order.indexOf(key) + 1;
   return (
     <section className="pr-sg pr-page">
       <PageHead
@@ -619,49 +638,40 @@ const SmallGroupPage: React.FC<{ service: Service; series?: Series }> = ({ servi
         title="Small group guide"
         right={<span className="pr-tag">{service.title}</span>}
       />
-      {(service.bigIdea || service.keyVerse) && (
-        <div className="pr-sg-idea">
-          {service.bigIdea && <div><p className="pr-label">Today's big idea</p><p className="pr-serif">{service.bigIdea}</p></div>}
-          {service.keyVerse && <div className="verse"><p className="pr-label">Key verse</p><p className="pr-serif">{service.keyVerse}</p></div>}
-        </div>
-      )}
       {g.icebreaker && (
-        <div className="pr-sg-open">
-          <p className="pr-sg-kicker warm">Open with</p>
-          <p className="pr-serif">{g.icebreaker}</p>
-        </div>
+        <SgStep n={n('open')} label="Open with" tone="warm">
+          <p className="pr-serif pr-sg-open-q">{g.icebreaker}</p>
+        </SgStep>
       )}
-      {g.questions.length > 0 && (
-        <div className="pr-sg-questions">
-          <p className="pr-sg-kicker">Discussion</p>
-          <ol>
-            {g.questions.map((q, i) => <li key={i}><span>{i + 1}</span><p className="pr-serif">{q}</p></li>)}
-          </ol>
-        </div>
+      {hasTalk && (
+        <SgStep n={n('talk')} label={g.questions.length && g.challenge ? 'Discuss, then apply' : g.questions.length ? 'Discuss' : 'Apply it this week'}>
+          <div className="pr-sg-talk">
+            {g.questions.length > 0 && (
+              <ol className="pr-sg-qs">
+                {g.questions.map((q, i) => <li key={i}><span>{i + 1}</span><p className="pr-serif">{q}</p></li>)}
+              </ol>
+            )}
+            {g.challenge && (
+              <div className="pr-sg-apply">
+                <p className="pr-label">This week</p>
+                {paragraphs(g.challenge).map((para, i) => <p key={i}>{para}</p>)}
+              </div>
+            )}
+          </div>
+        </SgStep>
       )}
+      {g.prayer && (
+        <SgStep n={n('pray')} label="Pray together">
+          <p className="pr-serif pr-sg-pray">{g.prayer}</p>
+        </SgStep>
+      )}
+      {g.activities.map((a) => <PartBlock key={a.id} service={service} part={a} />)}
       {g.notes && (
         <div className="pr-sg-notes">
           <p className="pr-sg-kicker">Leading well</p>
           <Blocks text={g.notes} />
         </div>
       )}
-      {(g.prayer || g.challenge) && (
-        <div className={`pr-sg-close ${g.prayer && g.challenge ? 'two' : ''}`}>
-          {g.prayer && (
-            <div>
-              <p className="pr-sg-kicker">Pray together</p>
-              <p className="pr-serif pr-sg-pray">{g.prayer}</p>
-            </div>
-          )}
-          {g.challenge && (
-            <div>
-              <p className="pr-sg-kicker">This week</p>
-              {paragraphs(g.challenge).map((para, i) => <p key={i} className="pr-sg-small">{para}</p>)}
-            </div>
-          )}
-        </div>
-      )}
-      {g.activities.map((a) => <PartBlock key={a.id} service={service} part={a} />)}
     </section>
   );
 };
@@ -703,26 +713,37 @@ const FamilyPage: React.FC<{ service: Service; series?: Series }> = ({ service, 
 
 const fmtQty = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 
-const SectionBlock: React.FC<{ service: Service; section: Section; schedule: Record<string, string>; index?: number }> = ({ service, section, schedule, index }) => (
-  <section className={`pr-sec ${section.pageBreak ? 'pr-break-after' : ''}`}>
-    {visibleParts(section).map((part, i) => (
-      <PartBlock
-        key={part.id}
-        service={service}
-        part={part}
-        time={schedule[part.id]}
-        lead={i === 0 && (
-          <header className="pr-sec-head">
-            <p className="pr-eyebrow">
-              {[index !== undefined ? `Part ${index + 1}` : '', schedule[section.id], `${sectionMinutes(section)} min`].filter(Boolean).join(' · ')}
-            </p>
-            <h2>{section.title}</h2>
-          </header>
-        )}
-      />
-    ))}
-  </section>
-);
+const SectionBlock: React.FC<{ service: Service; section: Section; schedule: Record<string, string>; index?: number }> = ({ service, section, schedule, index }) => {
+  const parts = visibleParts(section);
+  // A scripture reading followed by a discussion: its questions sit beside the S.T.A.R.S. prompts.
+  const pairedWith = (i: number) => {
+    const next = parts[i + 1];
+    return isReadingPart(parts[i]) && next?.type === 'discussion' && listItems(next.script).length > 0 ? next : undefined;
+  };
+  const absorbed = new Set(parts.map((_, i) => pairedWith(i)?.id).filter(Boolean));
+  return (
+    <section className={`pr-sec ${section.pageBreak ? 'pr-break-after' : ''}`}>
+      {parts.map((part, i) => (
+        <PartBlock
+          key={part.id}
+          service={service}
+          part={part}
+          time={schedule[part.id]}
+          starsQuestions={pairedWith(i) ? listItems(pairedWith(i)!.script) : undefined}
+          hideAsk={absorbed.has(part.id)}
+          lead={i === 0 && (
+            <header className="pr-sec-head">
+              <p className="pr-eyebrow">
+                {[index !== undefined ? `Part ${index + 1}` : '', schedule[section.id], `${sectionMinutes(section)} min`].filter(Boolean).join(' · ')}
+              </p>
+              <h2>{section.title}</h2>
+            </header>
+          )}
+        />
+      ))}
+    </section>
+  );
+};
 
 // "The setup: Pair students…" → a bold lead-in, the way printed curricula set them.
 const LEAD = /^([A-Z][^:.?!"“]{1,38}):\s+/;
@@ -794,15 +815,44 @@ const M: React.FC<{ label: string; tone?: string; children: React.ReactNode }> =
 
 // "Read: Acts 8:26–38" is a scripture reading; "Read It · Sit In It · Live It" is a study, not a reading.
 const READ_TITLE = /^read(ing)?\b(?!\s+it\b)/i;
+const isShortVerse = (part: Part) => part.type === 'bible-verse' && !!part.script.trim() && part.script.length < 400;
+const isReadingPart = (part: Part) => !isShortVerse(part) && (part.type === 'bible-verse' || READ_TITLE.test(part.title));
+
+// The S.T.A.R.S. method for studying a passage, with the discussion questions beside it.
+const STARS: [string, string, string][] = [
+  ['S', 'omething familiar', 'Things you have heard about before.'],
+  ['T', 'hemes', 'What theme sticks out?'],
+  ['A', 'ttributes of God', 'What does this say about God?'],
+  ['R', 'epetition', 'What occurs more than once?'],
+  ['S', 'omething surprising', 'What was unexpected?'],
+];
+const Stars: React.FC<{ questions?: string[] }> = ({ questions }) => (
+  <div className="pr-stars-wrap">
+    <p className="pr-stars-intro">Explore the passage with the <b>S.T.A.R.S.</b> method.</p>
+    <div className={`pr-stars ${questions?.length ? 'two' : ''}`}>
+      <ol className="pr-stars-list">
+        {STARS.map(([letter, rest, prompt], i) => (
+          <li key={i}><b><span>{letter}</span>{rest}</b><p>{prompt}</p></li>
+        ))}
+      </ol>
+      {questions && questions.length > 0 && (
+        <div className="pr-stars-qs">
+          <p className="pr-label">Discussion questions</p>
+          <ol>{questions.map((q, i) => <li key={i} className="pr-serif"><Rich text={q} /></li>)}</ol>
+        </div>
+      )}
+    </div>
+  </div>
+);
 const POINT = /^point\s+(\d+)\s*[:.–—-]\s*(.+)$/i;
 
-const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: React.ReactNode }> = ({ service, part, time, lead }) => {
+const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: React.ReactNode; starsQuestions?: string[]; hideAsk?: boolean }> = ({ service, part, time, lead, starsQuestions, hideAsk }) => {
   const { label } = PART_TYPES[part.type];
   const links = [...part.media, ...part.resources].filter((l) => /^https?:\/\//.test(l.url));
   const supplies = part.supplies.filter((s) => s.name.trim());
   const isQuestions = part.type === 'discussion' && (listItems(part.script).length > 1 || part.script.trim().endsWith('?'));
-  const isShortVerse = part.type === 'bible-verse' && part.script.trim() && part.script.length < 400;
-  const isReading = !isShortVerse && (part.type === 'bible-verse' || READ_TITLE.test(part.title));
+  const shortVerse = isShortVerse(part);
+  const isReading = isReadingPart(part);
   const point = part.title.match(POINT);
   const readingRef = isReading ? part.title.replace(/^read(ing)?\s*[:–—-]?\s*/i, '') : '';
   const kind = part.optional ? 'Going deeper · optional'
@@ -832,14 +882,14 @@ const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: 
       </M>
     ),
     part.instructions.trim() && <M key="do" label="Do"><Blocks text={part.instructions} /></M>,
-    part.script.trim() && (
+    part.script.trim() && !(hideAsk && isQuestions) && (
       isQuestions ? (
         <M key="say" label="Ask">
           <ol className="pr-questions">
             {listItems(part.script).map((q, i) => <li key={i}><span className="n">{i + 1}</span><p className="pr-serif"><Rich text={q} /></p></li>)}
           </ol>
         </M>
-      ) : isShortVerse ? (
+      ) : shortVerse ? (
         <M key="say" label="Read"><div className="pr-bigverse pr-serif"><p>{part.script}</p></div></M>
       ) : isReading ? (
         <M key="say" label="Read"><Reading text={part.script} /></M>
@@ -847,6 +897,7 @@ const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: 
         <M key="say" label="Say"><Blocks text={part.script} serif /></M>
       )
     ),
+    isReading && <M key="stars" label="Study"><Stars questions={starsQuestions} /></M>,
     links.length > 0 && (
       <M key="screen" label="Screen">
         <div className="pr-links">
