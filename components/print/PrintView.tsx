@@ -16,7 +16,6 @@ import { engagement, FAMILY_LABELS, familyCues, sectionsFor, smallGroupGuide } f
 import { FamilyCues } from '../../types';
 import { partReady } from '../../lib/readiness';
 import './print.css';
-import { Ed, EdPanel, EditTarget, useEditing } from './editable';
 
 // Colors, fonts, corners and heading case for a series (or the default look).
 // CSS from an imported layout, scoped to this book's root element.
@@ -168,8 +167,8 @@ export type PreviewKind = 'week' | 'lesson' | 'small' | 'family' | 'takehome' | 
 const SHEET_PX = 816; // 8.5in at 96 dpi
 
 // The same pages the printer gets, drawn as paper sheets and scaled to fit the pane.
-export const PrintPreview: React.FC<{ service: Service; series?: Series; kind: PreviewKind; onPartClick?: (partId: string) => void; onSectionClick?: (sectionId: string) => void; maxZoom?: number }> = ({ service, series, kind, onPartClick, onSectionClick, maxZoom = 1 }) => {
-  const { outer, zoom } = useFitZoom(maxZoom);
+export const PrintPreview: React.FC<{ service: Service; series?: Series; kind: PreviewKind; onPartClick?: (partId: string) => void }> = ({ service, series, kind, onPartClick }) => {
+  const { outer, zoom } = useFitZoom();
   const empty =
     (kind === 'small' && !smallGroupGuide(service).has) ? 'No small group section yet. Add a section and set it to "Small group" to get this page.'
     : service.sections.every((s) => s.hidden || visibleParts(s).length === 0) ? 'Add a section and a few parts, and the printed pages will appear here.'
@@ -177,8 +176,6 @@ export const PrintPreview: React.FC<{ service: Service; series?: Series; kind: P
   const onClick = (e: React.MouseEvent) => {
     const id = (e.target as HTMLElement).closest<HTMLElement>('[data-part]')?.dataset.part;
     if (id && onPartClick) onPartClick(id);
-    const sec = (e.target as HTMLElement).closest<HTMLElement>('[data-section]')?.dataset.section;
-    if (sec && onSectionClick) onSectionClick(sec);
   };
   return (
     <div ref={outer} className="pv-outer">
@@ -295,9 +292,7 @@ const Surface: React.FC<{ kind: 'cover' | 'divider'; series?: Series; uid: strin
 };
 
 // A page Diana wrote as HTML/SVG (already cleaned), with the series' text filled in.
-type EdField = { label: string; t: EditTarget; value: string; multiline?: boolean };
-const CustomPage: React.FC<{ kind: 'cover' | 'divider'; series?: Series; values: Record<string, string>; fields?: EdField[] }> = ({ kind, series, values, fields = [] }) => {
-  const editing = useEditing();
+const CustomPage: React.FC<{ kind: 'cover' | 'divider'; series?: Series; values: Record<string, string> }> = ({ kind, series, values }) => {
   const p = resolvePalette(designOf(series));
   const ref = React.useRef<HTMLElement>(null);
   // The printed curriculum never names the app, even on layouts saved before that rule.
@@ -306,15 +301,6 @@ const CustomPage: React.FC<{ kind: 'cover' | 'divider'; series?: Series; values:
   React.useLayoutEffect(() => {
     if (ref.current && ref.current.offsetParent !== null) fitText(ref.current);
   }, [html]);
-  if (editing && fields.length) {
-    // Write mode: the same page, plus an "Edit text" panel for its words.
-    return (
-      <section ref={ref} className={`${kind === 'cover' ? 'pr-cover' : 'pr-divider'} pr-custom`} style={{ background: p.deep, color: '#FFFFFF' }}>
-        <div dangerouslySetInnerHTML={{ __html: html }} />
-        <EdPanel fields={fields} />
-      </section>
-    );
-  }
   return (
     <section
       ref={ref}
@@ -326,7 +312,6 @@ const CustomPage: React.FC<{ kind: 'cover' | 'divider'; series?: Series; values:
 };
 
 const SeriesCover: React.FC<{ series: Series; weeks: Service[] }> = ({ series, weeks: lessons }) => {
-  const editing = useEditing();
   const weeks = forPrint(series, lessons);
   const sf = designOf(series).cover;
   if (designOf(series).custom.cover) {
@@ -343,23 +328,13 @@ const SeriesCover: React.FC<{ series: Series; weeks: Service[] }> = ({ series, w
           audience: series.audience,
           verse: series.memoryVerse,
         }}
-        fields={[
-          { label: 'Title', t: { kind: 'series', id: series.id, field: 'title' }, value: series.title },
-          { label: 'Series theme', t: { kind: 'series', id: series.id, field: series.bigIdea || !series.description ? 'bigIdea' : 'description' }, value: series.bigIdea || series.description, multiline: true },
-          { label: 'Audience', t: { kind: 'series', id: series.id, field: 'audience' }, value: series.audience },
-          { label: 'Memory verse', t: { kind: 'series', id: series.id, field: 'memoryVerse' }, value: series.memoryVerse, multiline: true },
-        ]}
       />
     );
   }
   const label = (
     <>
       <p className="pr-eyebrow">{weeks.length}-week series · {series.audience}</p>
-      {(series.bigIdea || series.description || editing) && (
-        <p className="pr-cover-theme pr-serif">
-          <Ed t={{ kind: 'series', id: series.id, field: series.bigIdea || !series.description ? 'bigIdea' : 'description' }} value={series.bigIdea || series.description} multiline placeholder="The series theme in one sentence" />
-        </p>
-      )}
+      {(series.bigIdea || series.description) && <p className="pr-cover-theme pr-serif">{series.bigIdea || series.description}</p>}
     </>
   );
   return (
@@ -374,34 +349,29 @@ const SeriesCover: React.FC<{ series: Series; weeks: Service[] }> = ({ series, w
         </>
       }
     >
-      <h1 className="pr-cover-title"><Ed t={{ kind: 'series', id: series.id, field: 'title' }} value={series.title} placeholder="Series title" /></h1>
+      <h1 className="pr-cover-title">{series.title}</h1>
       {sf.titleBox === 'none' ? label : <div className="pr-title-box">{label}</div>}
       <div className="pr-cover-foot">
         <div className="pr-cover-meta">
           {dateRange(weeks) && <div><span>Dates</span><b>{dateRange(weeks)}</b></div>}
           <div><span>Leader guide</span><b>{series.audience}</b></div>
         </div>
-        {(series.memoryVerse || editing) && <div className="pr-cover-verse pr-serif"><span>Memory verse</span><Ed t={{ kind: 'series', id: series.id, field: 'memoryVerse' }} value={series.memoryVerse} multiline placeholder="The verse for the whole series" /></div>}
+        {series.memoryVerse && <div className="pr-cover-verse pr-serif"><span>Memory verse</span>{series.memoryVerse}</div>}
       </div>
     </Surface>
   );
 };
 
 // Full-bleed section opener, like a chapter page.
-const Divider: React.FC<{ series?: Series; uid: string; icon: React.ElementType; kicker: string; title: string; sub?: string; idea?: string; subT?: EditTarget; ideaT?: EditTarget }> = ({ series, uid, icon: Icon, kicker, title, sub, idea, subT, ideaT }) => {
-  const editing = useEditing();
+const Divider: React.FC<{ series?: Series; uid: string; icon: React.ElementType; kicker: string; title: string; sub?: string; idea?: string }> = ({ series, uid, icon: Icon, kicker, title, sub, idea }) => {
   const box = designOf(series).divider.titleBox;
   if (designOf(series).custom.divider) {
-    const fields: EdField[] = [
-      ...(subT ? [{ label: 'Lesson title', t: subT, value: sub ?? '' }] : []),
-      ...(ideaT ? [{ label: 'Big idea', t: ideaT, value: idea ?? '', multiline: true }] : []),
-    ];
-    return <CustomPage kind="divider" series={series} values={{ title, subtitle: sub ?? '', kicker, eyebrow: kicker, idea: idea ?? '' }} fields={fields} />;
+    return <CustomPage kind="divider" series={series} values={{ title, subtitle: sub ?? '', kicker, eyebrow: kicker, idea: idea ?? '' }} />;
   }
   const label = (
     <>
       <p className="pr-eyebrow">{kicker}</p>
-      {sub && <p className="pr-divider-sub">{subT ? <Ed t={subT} value={sub} /> : sub}</p>}
+      {sub && <p className="pr-divider-sub">{sub}</p>}
     </>
   );
   return (
@@ -409,7 +379,7 @@ const Divider: React.FC<{ series?: Series; uid: string; icon: React.ElementType;
       <span className="pr-divider-icon"><Icon /></span>
       <h2>{title}</h2>
       {box === 'none' ? label : <div className="pr-title-box">{label}</div>}
-      {(idea || (editing && ideaT)) && <p className="pr-divider-idea pr-serif">{ideaT ? <Ed t={ideaT} value={idea ?? ''} multiline placeholder="The big idea" /> : idea}</p>}
+      {idea && <p className="pr-divider-idea pr-serif">{idea}</p>}
     </Surface>
   );
 };
@@ -425,19 +395,13 @@ const LEGEND: [React.ElementType, string, string][] = [
   [Layers, 'Going deeper', 'optional extras if you have time'],
 ];
 
-const LeaderGuide: React.FC<{ series: Series; weeks: Service[] }> = ({ series, weeks }) => {
-  const editing = useEditing();
-  return (
+const LeaderGuide: React.FC<{ series: Series; weeks: Service[] }> = ({ series, weeks }) => (
   <section className="pr-leader pr-page">
     <header className="pr-head">
       <p className="pr-eyebrow">Start here</p>
       <h1>Welcome, leader</h1>
     </header>
-    {(series.leaderGuide || series.description || editing) && (
-      <div className="pr-letter pr-serif">
-        <Ed t={{ kind: 'series', id: series.id, field: 'leaderGuide' }} value={series.leaderGuide || series.description} multiline block placeholder="A welcome letter to your leaders: what this series is, why it matters, and how to lead it well." />
-      </div>
-    )}
+    {(series.leaderGuide || series.description) && <p className="pr-letter pr-serif">{series.leaderGuide || series.description}</p>}
     <p className="pr-label" style={{ marginTop: '18pt' }}>Inside each week</p>
     <div className="pr-roles">
       <div><span className="pr-role-icon"><Sparkles /></span><b>Large group lesson</b><p>A session plan and overview, then the hook, teaching, and everything on stage, part by part.</p></div>
@@ -457,8 +421,8 @@ const LeaderGuide: React.FC<{ series: Series; weeks: Service[] }> = ({ series, w
         <li key={w.id}>
           <span className="n">{pad2(w.week ?? 0)}</span>
           <div>
-            <h3><Ed t={{ kind: 'service', id: w.id, field: 'title' }} value={w.title} /></h3>
-            {(w.bigIdea || editing) && <p className="idea pr-serif"><Ed t={{ kind: 'service', id: w.id, field: 'bigIdea' }} value={w.bigIdea} multiline placeholder="This week's big idea" /></p>}
+            <h3>{w.title}</h3>
+            {w.bigIdea && <p className="idea pr-serif">{w.bigIdea}</p>}
           </div>
           <div className="when">{w.date && <b>{formatWhen(w.date)}</b>}{w.scripture}</div>
         </li>
@@ -466,8 +430,7 @@ const LeaderGuide: React.FC<{ series: Series; weeks: Service[] }> = ({ series, w
     </ol>
     </div>
   </section>
-  );
-};
+);
 
 // ---------- One week: lesson, small group guide, family page ----------
 
@@ -482,8 +445,6 @@ const FullWeek: React.FC<{ service: Service; series?: Series; divider?: boolean 
         title={service.week ? `Week ${service.week}` : service.title}
         sub={service.week ? service.title : service.scripture}
         idea={service.bigIdea}
-        subT={{ kind: 'service', id: service.id, field: service.week ? 'title' : 'scripture' }}
-        ideaT={{ kind: 'service', id: service.id, field: 'bigIdea' }}
       />
     )}
     <Lesson service={service} series={series} />
@@ -492,12 +453,12 @@ const FullWeek: React.FC<{ service: Service; series?: Series; divider?: boolean 
   </>
 );
 
-const PageHead: React.FC<{ service: Service; series?: Series; kicker: string; title: string; titleT?: EditTarget; right?: React.ReactNode }> = ({ service, series, kicker, title, titleT, right }) => (
+const PageHead: React.FC<{ service: Service; series?: Series; kicker: string; title: string; right?: React.ReactNode }> = ({ service, series, kicker, title, right }) => (
   <header className="pr-head pr-head-split">
     <div>
       <PageMark kind={designOf(series).page.mark} />
       <p className="pr-eyebrow">{series && service.week ? `Week ${service.week} · ` : ''}{kicker}</p>
-      <h1>{titleT ? <Ed t={titleT} value={title} /> : title}</h1>
+      <h1>{title}</h1>
     </div>
     {right}
   </header>
@@ -529,7 +490,6 @@ const Lesson: React.FC<{ service: Service; series?: Series }> = ({ service, seri
 };
 
 const SessionPlan: React.FC<{ service: Service; series?: Series }> = ({ service, series }) => {
-  const editing = useEditing();
   const { activities, challenge } = engagement(service);
   const supplies = aggregateSupplies(service);
   const all = service.sections.filter((s) => !s.hidden).flatMap(visibleParts);
@@ -551,18 +511,15 @@ const SessionPlan: React.FC<{ service: Service; series?: Series }> = ({ service,
         series={series}
         kicker="Session plan"
         title={service.title}
-        titleT={{ kind: 'service', id: service.id, field: 'title' }}
-        right={(service.scripture || editing) && <div className="pr-head-right"><span>Scripture</span><b className="pr-serif"><Ed t={{ kind: 'service', id: service.id, field: 'scripture' }} value={service.scripture} placeholder="Passage" /></b></div>}
+        right={service.scripture && <div className="pr-head-right"><span>Scripture</span><b className="pr-serif">{service.scripture}</b></div>}
       />
       <div className="pr-plan-grid">
         <div>
-          {(service.bigIdea || editing) && <Row icon={Target} label="Session aim"><p className="pr-serif pr-aim"><Ed t={{ kind: 'service', id: service.id, field: 'bigIdea' }} value={service.bigIdea} multiline placeholder="The one idea everything points to" /></p></Row>}
-          {(objectives.length > 0 || editing) && (
+          {service.bigIdea && <Row icon={Target} label="Session aim"><p className="pr-serif pr-aim">{service.bigIdea}</p></Row>}
+          {objectives.length > 0 && (
             <Row icon={ListChecks} label="Objectives">
               <p className="pr-row-lead">By the end of this session, {/kid|child|preschool/i.test(service.audience) ? 'kids' : 'students'} will:</p>
-              <Ed t={{ kind: 'service', id: service.id, field: 'objectives' }} value={service.objectives} multiline block placeholder="One objective per line">
-                <ul className="pr-bullets">{objectives.map((o, i) => <li key={i}>{o}</li>)}</ul>
-              </Ed>
+              <ul className="pr-bullets">{objectives.map((o, i) => <li key={i}>{o}</li>)}</ul>
             </Row>
           )}
           <Row icon={Package} label="What you will need">
@@ -575,10 +532,10 @@ const SessionPlan: React.FC<{ service: Service; series?: Series }> = ({ service,
           </Row>
         </div>
         <aside>
-          {(service.keyVerse || editing) && (
+          {service.keyVerse && (
             <div className="pr-side-verse">
               <p className="pr-label">Key verse</p>
-              <p className="pr-serif"><Ed t={{ kind: 'service', id: service.id, field: 'keyVerse' }} value={service.keyVerse} multiline placeholder="This week's key verse" /></p>
+              <p className="pr-serif">{service.keyVerse}</p>
             </div>
           )}
           {(activities.length > 0 || challenge) && (
@@ -653,10 +610,6 @@ const SessionOverview: React.FC<{ service: Service; series?: Series; schedule: R
 const SmallGroupPage: React.FC<{ service: Service; series?: Series }> = ({ service, series }) => {
   const g = smallGroupGuide(service);
   if (!g.has) return null;
-  // Text pulled from a part edits that part: its script, or its instructions if that's where the words are.
-  const fromPart = (part: Part | undefined, shown: string, children?: React.ReactNode) =>
-    part ? <Ed t={{ kind: 'part', serviceId: service.id, partId: part.id, field: part.script.trim() ? 'script' : 'instructions' }} value={part.script.trim() ? part.script : part.instructions} multiline block={!!children}>{children ?? shown}</Ed> : (children ?? shown);
-  let qn = 0;
   return (
     <section className="pr-sg pr-page">
       <PageHead
@@ -668,24 +621,21 @@ const SmallGroupPage: React.FC<{ service: Service; series?: Series }> = ({ servi
       />
       {(service.bigIdea || service.keyVerse) && (
         <div className="pr-sg-idea">
-          {service.bigIdea && <div><p className="pr-label">Today's big idea</p><p className="pr-serif"><Ed t={{ kind: 'service', id: service.id, field: 'bigIdea' }} value={service.bigIdea} multiline /></p></div>}
-          {service.keyVerse && <div className="verse"><p className="pr-label">Key verse</p><p className="pr-serif"><Ed t={{ kind: 'service', id: service.id, field: 'keyVerse' }} value={service.keyVerse} multiline /></p></div>}
+          {service.bigIdea && <div><p className="pr-label">Today's big idea</p><p className="pr-serif">{service.bigIdea}</p></div>}
+          {service.keyVerse && <div className="verse"><p className="pr-label">Key verse</p><p className="pr-serif">{service.keyVerse}</p></div>}
         </div>
       )}
       {g.icebreaker && (
         <div className="pr-sg-open">
           <p className="pr-sg-kicker warm">Open with</p>
-          <p className="pr-serif">{fromPart(g.from.icebreaker, g.icebreaker)}</p>
+          <p className="pr-serif">{g.icebreaker}</p>
         </div>
       )}
       {g.questions.length > 0 && (
         <div className="pr-sg-questions">
           <p className="pr-sg-kicker">Discussion</p>
           <ol>
-            {g.from.discussion.flatMap((part) => listItems(part.script).map((q, i) => {
-              qn += 1;
-              return <li key={`${part.id}-${i}`}><span>{qn}</span><p className="pr-serif"><Ed t={{ kind: 'question', serviceId: service.id, partId: part.id, index: i }} value={q} multiline>{q}</Ed></p></li>;
-            }))}
+            {g.questions.map((q, i) => <li key={i}><span>{i + 1}</span><p className="pr-serif">{q}</p></li>)}
           </ol>
         </div>
       )}
@@ -700,13 +650,13 @@ const SmallGroupPage: React.FC<{ service: Service; series?: Series }> = ({ servi
           {g.prayer && (
             <div>
               <p className="pr-sg-kicker">Pray together</p>
-              <p className="pr-serif pr-sg-pray">{fromPart(g.from.prayer, g.prayer)}</p>
+              <p className="pr-serif pr-sg-pray">{g.prayer}</p>
             </div>
           )}
           {g.challenge && (
             <div>
               <p className="pr-sg-kicker">This week</p>
-              {fromPart(g.from.challenge, g.challenge, paragraphs(g.challenge).map((para, i) => <p key={i} className="pr-sg-small">{para}</p>))}
+              {paragraphs(g.challenge).map((para, i) => <p key={i} className="pr-sg-small">{para}</p>)}
             </div>
           )}
         </div>
@@ -732,8 +682,8 @@ const FamilyPage: React.FC<{ service: Service; series?: Series }> = ({ service, 
       </header>
       {(service.bigIdea || verse) && (
         <div className="pr-family-strip">
-          {service.bigIdea && <p className="pr-serif"><Ed t={{ kind: 'service', id: service.id, field: 'bigIdea' }} value={service.bigIdea} multiline /></p>}
-          {verse && <p className="pr-family-verse pr-serif">{service.keyVerse ? <Ed t={{ kind: 'service', id: service.id, field: 'keyVerse' }} value={service.keyVerse} multiline /> : verse}</p>}
+          {service.bigIdea && <p className="pr-serif">{service.bigIdea}</p>}
+          {verse && <p className="pr-family-verse pr-serif">{verse}</p>}
         </div>
       )}
       <div className="pr-family-grid">
@@ -742,7 +692,7 @@ const FamilyPage: React.FC<{ service: Service; series?: Series }> = ({ service, 
           return (
             <div key={k} className={`pr-family-card ${k}`}>
               <div className="pr-family-card-head"><span><Icon /></span><b>{FAMILY_LABELS[k].title}</b></div>
-              <p className="pr-serif"><Ed t={{ kind: 'family', serviceId: service.id, key: k }} value={service.family[k].trim() || cues[k]} multiline>{cues[k]}</Ed></p>
+              <p className="pr-serif">{cues[k]}</p>
             </div>
           );
         })}
@@ -762,11 +712,11 @@ const SectionBlock: React.FC<{ service: Service; section: Section; schedule: Rec
         part={part}
         time={schedule[part.id]}
         lead={i === 0 && (
-          <header className="pr-sec-head" data-section={section.id}>
+          <header className="pr-sec-head">
             <p className="pr-eyebrow">
               {[index !== undefined ? `Part ${index + 1}` : '', schedule[section.id], `${sectionMinutes(section)} min`].filter(Boolean).join(' · ')}
             </p>
-            <h2><Ed t={{ kind: 'section', serviceId: service.id, sectionId: section.id }} value={section.title} /></h2>
+            <h2>{section.title}</h2>
           </header>
         )}
       />
@@ -847,9 +797,6 @@ const READ_TITLE = /^read(ing)?\b(?!\s+it\b)/i;
 const POINT = /^point\s+(\d+)\s*[:.–—-]\s*(.+)$/i;
 
 const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: React.ReactNode }> = ({ service, part, time, lead }) => {
-  const editing = useEditing();
-  const selected = editing?.selectedPartId === part.id;
-  const pt = (field: 'title' | 'script' | 'instructions' | 'inclusionTips' | 'leaderNotes'): EditTarget => ({ kind: 'part', serviceId: service.id, partId: part.id, field });
   const { label } = PART_TYPES[part.type];
   const links = [...part.media, ...part.resources].filter((l) => /^https?:\/\//.test(l.url));
   const supplies = part.supplies.filter((s) => s.name.trim());
@@ -874,7 +821,7 @@ const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: 
       </div>
       <div>
         {kind && <p className="pr-p-kind">{kind}</p>}
-        <h3><Ed t={pt('title')} value={part.title}>{point ? point[2] : isReading && readingRef ? readingRef : part.title}</Ed></h3>
+        <h3>{point ? point[2] : isReading && readingRef ? readingRef : part.title}</h3>
       </div>
     </div>
   );
@@ -884,23 +831,20 @@ const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: 
         <ul className="pr-need">{supplies.map((s) => <li key={s.id}><b>{fmtQty(supplyTotal(s, service))}</b> {s.name}</li>)}</ul>
       </M>
     ),
-    (part.instructions.trim() || selected) && <M key="do" label="Do"><Ed t={pt('instructions')} value={part.instructions} multiline block look="do" placeholder="What the leader does. Type / on a new line to add a part."><Blocks text={part.instructions} /></Ed></M>,
-    !part.script.trim() && selected && <M key="say" label="Say"><Ed t={pt('script')} value="" multiline block look="say" placeholder="What the leader says, word for word. [Brackets] for actions." /></M>,
+    part.instructions.trim() && <M key="do" label="Do"><Blocks text={part.instructions} /></M>,
     part.script.trim() && (
       isQuestions ? (
         <M key="say" label="Ask">
-          <Ed t={pt('script')} value={part.script} multiline block>
-            <ol className="pr-questions">
-              {listItems(part.script).map((q, i) => <li key={i}><span className="n">{i + 1}</span><p className="pr-serif"><Rich text={q} /></p></li>)}
-            </ol>
-          </Ed>
+          <ol className="pr-questions">
+            {listItems(part.script).map((q, i) => <li key={i}><span className="n">{i + 1}</span><p className="pr-serif"><Rich text={q} /></p></li>)}
+          </ol>
         </M>
       ) : isShortVerse ? (
-        <M key="say" label="Read"><Ed t={pt('script')} value={part.script} multiline block><div className="pr-bigverse pr-serif"><p>{part.script}</p></div></Ed></M>
+        <M key="say" label="Read"><div className="pr-bigverse pr-serif"><p>{part.script}</p></div></M>
       ) : isReading ? (
-        <M key="say" label="Read"><Ed t={pt('script')} value={part.script} multiline block><Reading text={part.script} /></Ed></M>
+        <M key="say" label="Read"><Reading text={part.script} /></M>
       ) : (
-        <M key="say" label="Say"><Ed t={pt('script')} value={part.script} multiline block look="say"><Blocks text={part.script} serif /></Ed></M>
+        <M key="say" label="Say"><Blocks text={part.script} serif /></M>
       )
     ),
     links.length > 0 && (
@@ -915,14 +859,14 @@ const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: 
         </div>
       </M>
     ),
-    part.inclusionTips.trim() && <M key="adapt" label="Adapt" tone="inclusion"><Ed t={pt('inclusionTips')} value={part.inclusionTips} multiline block look="do"><Blocks text={part.inclusionTips} /></Ed></M>,
-    part.leaderNotes.trim() && <M key="note" label="Note" tone="note"><Ed t={pt('leaderNotes')} value={part.leaderNotes} multiline block look="do"><Blocks text={part.leaderNotes} /></Ed></M>,
+    part.inclusionTips.trim() && <M key="adapt" label="Adapt" tone="inclusion"><Blocks text={part.inclusionTips} /></M>,
+    part.leaderNotes.trim() && <M key="note" label="Note" tone="note"><Blocks text={part.leaderNotes} /></M>,
   ].filter(Boolean);
   // Text flows to fill each page; CSS keeps headings attached to the first lines under them.
   return (
     <>
       {lead}
-      <article data-part={part.id} data-selected={selected || undefined} className={`pr-p ${part.optional ? 'deeper' : ''} ${point ? 'point' : ''} ${lead ? 'first' : ''} ${part.pageBreak ? 'pr-break-after' : ''}`}>
+      <article data-part={part.id} className={`pr-p ${part.optional ? 'deeper' : ''} ${point ? 'point' : ''} ${lead ? 'first' : ''} ${part.pageBreak ? 'pr-break-after' : ''}`}>
         {head}
         {rows}
       </article>
