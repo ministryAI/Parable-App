@@ -13,6 +13,7 @@ import { useStore } from '../store/StoreContext';
 import { restrictToVerticalAxis } from './dndModifiers';
 import { SectionActions, SectionCard } from './SectionCard';
 import { SidePanel } from './SidePanel';
+import { WriteView } from './write/WriteView';
 import { PreviewKind, PrintPreview } from './print/PrintView';
 import { Button, EmptyState, Menu, MenuDivider, MenuItem } from './ui';
 
@@ -55,7 +56,7 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
   // Times count from the start of the lesson (0:00, 0:04…); clock times belong to a run, not the lesson.
   const schedule = useMemo(() => (service ? buildElapsed(service) : {}), [service]);
   // Live preview of the printed pages beside the editor; the choice is remembered per browser.
-  const [pref, setPref] = useState(() => readPref<{ on: boolean; kind: PreviewKind; panel: 'preview' | 'details' }>({ on: true, kind: 'week', panel: 'preview' }));
+  const [pref, setPref] = useState(() => readPref<{ on: boolean; kind: PreviewKind; panel: 'preview' | 'details'; mode: 'write' | 'cards' }>({ on: true, kind: 'week', panel: 'preview', mode: 'write' }));
   const savePref = (next: Partial<typeof pref>) => {
     const merged = { ...pref, ...next };
     setPref(merged);
@@ -71,7 +72,7 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
   liveRef.current = { pref, service };
   const showInPreview = React.useCallback((partId: string) => {
     const { pref: p, service: svc } = liveRef.current;
-    if (!p.on || p.panel !== 'preview' || !svc) return;
+    if (p.mode === 'write' || !p.on || p.panel !== 'preview' || !svc) return;
     const find = () => {
       const box = previewRef.current;
       if (!box) return null;
@@ -195,8 +196,38 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
     requestAnimationFrame(() => document.getElementById(`part-${partId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
+  const printMenu = (
+    <Menu trigger={<Button type="button" icon={Printer}>Print</Button>}>
+      <MenuItem icon={BookOpen} onClick={() => print(service.id, { kind: 'week' })}>Whole lesson (large group, small group, family)</MenuItem>
+      <MenuItem icon={FileText} onClick={() => print(service.id, { kind: 'lesson' })}>Large group lesson</MenuItem>
+      <MenuItem icon={Users} onClick={() => print(service.id, { kind: 'small' })}>Small group guide</MenuItem>
+      <MenuItem icon={Sunrise} onClick={() => print(service.id, { kind: 'family' })}>Family page</MenuItem>
+      <MenuItem icon={Scissors} onClick={() => print(service.id, { kind: 'takehome' })}>Take-home cards (2 per page)</MenuItem>
+      <MenuDivider />
+      <MenuItem icon={LayoutList} onClick={() => print(service.id, { kind: 'run-sheet' })}>Run sheet</MenuItem>
+      <MenuItem icon={Package} onClick={() => print(service.id, { kind: 'supplies' })}>Supply list</MenuItem>
+    </Menu>
+  );
+  const lessonMenu = (
+    <Menu label="Lesson actions">
+      <MenuItem icon={Copy} onClick={duplicate}>Duplicate lesson</MenuItem>
+      <MenuItem icon={Download} onClick={() => downloadJson(`${slug(service.title)}.parable.json`, { version: 1, series: [], services: [found!], library: [] })}>Export file</MenuItem>
+      <MenuItem icon={LayoutList} onClick={() => mapSections((secs) => secs.map((s) => ({ ...s, collapsed: !allCollapsed })))}>
+        {allCollapsed ? 'Expand all sections' : 'Collapse all sections'}
+      </MenuItem>
+      <MenuDivider />
+      <MenuItem icon={Trash2} danger onClick={() => { deleteService(service.id); navigate(series ? `/series/${series.id}` : '/'); }}>Delete lesson</MenuItem>
+    </Menu>
+  );
+  const modeSwitch = (
+    <div className="segmented" role="tablist" aria-label="Editor">
+      <button type="button" role="tab" aria-selected={pref.mode === 'write'} onClick={() => savePref({ mode: 'write' })}>Write</button>
+      <button type="button" role="tab" aria-selected={pref.mode !== 'write'} onClick={() => savePref({ mode: 'cards' })}>Cards</button>
+    </div>
+  );
+
   return (
-    <div className={`${pref.on ? 'max-w-[1680px]' : 'max-w-7xl'} mx-auto px-4 md:px-6 pb-24`}>
+    <div className={`${pref.on && pref.mode !== 'write' ? 'max-w-[1680px]' : 'max-w-7xl'} mx-auto px-4 md:px-6 pb-24`}>
       <div className="flex items-center gap-2 text-sm text-gray-500 py-3">
         <button type="button" onClick={() => navigate('/')} className="inline-flex items-center gap-1 hover:text-ink">
           <ArrowLeft className="w-4 h-4" /> Shelf
@@ -209,8 +240,15 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
             </button>
           </>
         )}
+        <div className="ml-auto flex items-center gap-2">
+          {modeSwitch}
+          {pref.mode === 'write' && <>{printMenu}{lessonMenu}</>}
+        </div>
       </div>
 
+      {pref.mode === 'write' ? (
+        <WriteView service={service} series={series} schedule={schedule} update={update} actions={actions} />
+      ) : (<>
       <header className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
         <div className="flex-1 min-w-0">
           <input
@@ -230,25 +268,8 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
           <Button type="button" variant="outline" icon={pref.on ? EyeOff : Eye} onClick={() => savePref({ on: !pref.on })} className="hidden lg:inline-flex">
             {pref.on ? 'Hide preview' : 'Preview'}
           </Button>
-          <Menu trigger={<Button type="button" icon={Printer}>Print</Button>}>
-            <MenuItem icon={BookOpen} onClick={() => print(service.id, { kind: 'week' })}>Whole lesson (large group, small group, family)</MenuItem>
-            <MenuItem icon={FileText} onClick={() => print(service.id, { kind: 'lesson' })}>Large group lesson</MenuItem>
-            <MenuItem icon={Users} onClick={() => print(service.id, { kind: 'small' })}>Small group guide</MenuItem>
-            <MenuItem icon={Sunrise} onClick={() => print(service.id, { kind: 'family' })}>Family page</MenuItem>
-            <MenuItem icon={Scissors} onClick={() => print(service.id, { kind: 'takehome' })}>Take-home cards (2 per page)</MenuItem>
-            <MenuDivider />
-            <MenuItem icon={LayoutList} onClick={() => print(service.id, { kind: 'run-sheet' })}>Run sheet</MenuItem>
-            <MenuItem icon={Package} onClick={() => print(service.id, { kind: 'supplies' })}>Supply list</MenuItem>
-          </Menu>
-          <Menu label="Lesson actions">
-            <MenuItem icon={Copy} onClick={duplicate}>Duplicate lesson</MenuItem>
-            <MenuItem icon={Download} onClick={() => downloadJson(`${slug(service.title)}.parable.json`, { version: 1, series: [], services: [found!], library: [] })}>Export file</MenuItem>
-            <MenuItem icon={LayoutList} onClick={() => mapSections((secs) => secs.map((s) => ({ ...s, collapsed: !allCollapsed })))}>
-              {allCollapsed ? 'Expand all sections' : 'Collapse all sections'}
-            </MenuItem>
-            <MenuDivider />
-            <MenuItem icon={Trash2} danger onClick={() => { deleteService(service.id); navigate(series ? `/series/${series.id}` : '/'); }}>Delete lesson</MenuItem>
-          </Menu>
+          {printMenu}
+          {lessonMenu}
         </div>
       </header>
 
@@ -305,6 +326,7 @@ export const ServiceEditor: React.FC<{ serviceId: string; focusPartId?: string }
           <SidePanel service={service} update={update} onJumpToPart={jumpToPart} />
         </div>
       </div>
+      </>)}
     </div>
   );
 };
