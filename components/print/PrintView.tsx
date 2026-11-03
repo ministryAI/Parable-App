@@ -715,12 +715,13 @@ const fmtQty = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 
 const SectionBlock: React.FC<{ service: Service; section: Section; schedule: Record<string, string>; index?: number }> = ({ service, section, schedule, index }) => {
   const parts = visibleParts(section);
-  // A scripture reading followed by a discussion: its questions sit beside the S.T.A.R.S. prompts.
+  // A scripture reading followed by a discussion: that discussion is the study, so it prints the
+  // S.T.A.R.S. prompts with its questions beside them, and the reading just prints the passage.
   const pairedWith = (i: number) => {
     const next = parts[i + 1];
     return isReadingPart(parts[i]) && next?.type === 'discussion' && listItems(next.script).length > 0 ? next : undefined;
   };
-  const absorbed = new Set(parts.map((_, i) => pairedWith(i)?.id).filter(Boolean));
+  const study = new Set(parts.map((_, i) => pairedWith(i)?.id).filter(Boolean));
   return (
     <section className={`pr-sec ${section.pageBreak ? 'pr-break-after' : ''}`}>
       {parts.map((part, i) => (
@@ -729,8 +730,8 @@ const SectionBlock: React.FC<{ service: Service; section: Section; schedule: Rec
           service={service}
           part={part}
           time={schedule[part.id]}
-          starsQuestions={pairedWith(i) ? listItems(pairedWith(i)!.script) : undefined}
-          hideAsk={absorbed.has(part.id)}
+          studyQuestions={study.has(part.id) ? listItems(part.script) : undefined}
+          noStudy={!!pairedWith(i)}
           lead={i === 0 && (
             <header className="pr-sec-head">
               <p className="pr-eyebrow">
@@ -846,7 +847,7 @@ const Stars: React.FC<{ questions?: string[] }> = ({ questions }) => (
 );
 const POINT = /^point\s+(\d+)\s*[:.–—-]\s*(.+)$/i;
 
-const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: React.ReactNode; starsQuestions?: string[]; hideAsk?: boolean }> = ({ service, part, time, lead, starsQuestions, hideAsk }) => {
+const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: React.ReactNode; studyQuestions?: string[]; noStudy?: boolean }> = ({ service, part, time, lead, studyQuestions, noStudy }) => {
   const { label } = PART_TYPES[part.type];
   const links = [...part.media, ...part.resources].filter((l) => /^https?:\/\//.test(l.url));
   const supplies = part.supplies.filter((s) => s.name.trim());
@@ -882,7 +883,7 @@ const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: 
       </M>
     ),
     part.instructions.trim() && <M key="do" label="Do"><Blocks text={part.instructions} /></M>,
-    part.script.trim() && !(hideAsk && isQuestions) && (
+    part.script.trim() && !(studyQuestions && isQuestions) && (
       isQuestions ? (
         <M key="say" label="Ask">
           <ol className="pr-questions">
@@ -897,7 +898,7 @@ const PartBlock: React.FC<{ service: Service; part: Part; time?: string; lead?: 
         <M key="say" label="Say"><Blocks text={part.script} serif /></M>
       )
     ),
-    isReading && <M key="stars" label="Study"><Stars questions={starsQuestions} /></M>,
+    (studyQuestions || (isReading && !noStudy)) && <M key="stars" label="Study"><Stars questions={studyQuestions} /></M>,
     links.length > 0 && (
       <M key="screen" label="Screen">
         <div className="pr-links">

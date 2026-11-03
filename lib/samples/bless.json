@@ -10,7 +10,7 @@
       "startDate": "2026-10-04",
       "bigIdea": "God uses the unlikely to accomplish the impossible, and He invites us to join in.",
       "memoryVerse": "I will bless you\u2026 and you will be a blessing. (Genesis 12:2)",
-      "leaderGuide": "Thank you for leading B.L.E.S.S. Over five weeks, students learn five everyday practices for joining what God is already doing: Begin with prayer, Listen with care, Eat together, Serve with love, and Share the story. It all starts with God's promise to Abraham: \"I will bless you\u2026 and you will be a blessing.\"\n\nOne practice runs through every week. In week 1, each student writes three names on a BLESS card, and every week the group prays for those names together, adding one step at a time. Each week also uses the same study method: Read it, Sit in it, Live it.\n\nBeing known matters more than being impressive. Pray for each student by name before you arrive. Listen more than you talk; \"I don't know, I wonder too\" is a faithful answer. Notice the student who is here but not included, and sit with them. When a student questions or doubts, stay calm, stay close, and follow up one-on-one. Some students need help seeing hope; others need someone to stay with them in the pain. Behavior can be a response to something hard, so respond calmly.",
+      "leaderGuide": "Thank you for leading B.L.E.S.S. Over five weeks, students learn five everyday practices for joining what God is already doing: Begin with prayer, Listen with care, Eat together, Serve with love, and Share the story. It all starts with God's promise to Abraham: \"I will bless you\u2026 and you will be a blessing.\"\n\nOne practice runs through every week. In week 1, each student writes three names on a BLESS card, and every week the group prays for those names together, adding one step at a time. Each week also studies the passage the same way, with the S.T.A.R.S. method: Something familiar, Themes, Attributes of God, Repetition, Something surprising.\n\nBeing known matters more than being impressive. Pray for each student by name before you arrive. Listen more than you talk; \"I don't know, I wonder too\" is a faithful answer. Notice the student who is here but not included, and sit with them. When a student questions or doubts, stay calm, stay close, and follow up one-on-one. Some students need help seeing hope; others need someone to stay with them in the pain. Behavior can be a response to something hard, so respond calmly.",
       "createdAt": 1790726400000,
       "updatedAt": 1791158400000,
       "runs": [],
@@ -108,11 +108,11 @@
             },
             {
               "id": "bless-p-9",
-              "title": "Read It \u00b7 Sit In It \u00b7 Live It",
+              "title": "S.T.A.R.S.",
               "type": "discussion",
               "minutes": 6,
-              "instructions": "Walk through the passage together with the same three moves every week. Take a few answers for each. There are no wrong answers to \"Sit in it.\"",
-              "script": "1. Read it: Which words show up again and again? (Listen for \"always,\" \"all,\" \"every,\" \"continually,\" \"growing.\")\n2. Sit in it: Imagine you're one of the Colossians and you find out someone has been praying for you every single day, by name. How would that feel?\n3. Live it: What would change if you prayed for the same three people every day this month?"
+              "instructions": "Walk through the passage with the S.T.A.R.S. prompts below. Take a few answers for each letter, then ask the questions. There are no wrong answers.",
+              "script": "1. What do you hear God saying to you through this passage?\n2. What stood out to you about how Paul prays for people he has never met?\n3. What was surprising about this passage?\n4. What feelings or emotions stirred in you in response to this passage?"
             }
           ]
         },
@@ -343,11 +343,11 @@
             },
             {
               "id": "bless-p-38",
-              "title": "Read It \u00b7 Sit In It \u00b7 Live It",
+              "title": "S.T.A.R.S.",
               "type": "discussion",
               "minutes": 6,
-              "instructions": "Walk through the passage together with the same three moves every week. Take a few answers for each. There are no wrong answers to \"Sit in it.\"",
-              "script": "1. Read it: Who does Philip listen to in this story? (The angel, the Spirit, the man, and the Scriptures.)\n2. Sit in it: Picture yourself as the man in the chariot, reading something you don't understand, far from home. What do you feel when a stranger runs up and asks a real question?\n3. Live it: Where is one place this week where you could ask a question instead of giving an answer?"
+              "instructions": "Walk through the passage with the S.T.A.R.S. prompts below. Take a few answers for each letter, then ask the questions. There are no wrong answers.",
+              "script": "1. What do you hear God saying to you through this passage?\n2. What stood out to you about how Philip listened: to the Spirit, to the man, and to the Scriptures?\n3. What was surprising about this passage?\n4. What feelings or emotions stirred in you in response to this passage?"
             }
           ]
         },
@@ -517,11 +517,11 @@
             },
             {
               "id": "bless-p-58",
-              "title": "Read It \u00b7 Sit In It \u00b7 Live It",
+              "title": "S.T.A.R.S.",
               "type": "discussion",
               "minutes": 6,
-              "instructions": "Walk through the passage together with the same three moves every week. Take a few answers for each. There are no wrong answers to \"Sit in it.\"",
-              "script": "1. Read it: What does Levi do right after Jesus invites him? Who shows up at his party?\n2. Sit in it: Imagine you're Levi, the person everyone avoids, and Jesus says \"Follow me.\" What goes through your head?\n3. Live it: Who could you invite to sit with you, at lunch or anywhere, this week?"
+              "instructions": "Walk through the passage with the S.T.A.R.S. prompts below. Take a few answers for each letter, then ask the questions. There are no wrong answers.",
+              "script": "1. What do you hear God saying to you through this passage?\n2. What stood out to you about who Jesus chose to eat with, and who complained about it?\n3. What was surprising about this passage?\n4. What feelings or emotions stirred in you in response to this passage?"
             }
           ]
         },
@@ -717,11 +717,11 @@
             },
             {
               "id": "bless-p-82",
-              "title": "Read It \u00b7 Sit In It \u00b7 Live It",
+              "title": "S.T.A.R.S.",
               "type": "discussion",
               "minutes": 6,
-              "instructions": "Walk through the passage together with the same three moves every week. Take a few answers for each. There are no wrong answers to \"Sit in it.\"",
-              "script": "1. Read it: Who does Jesus say he is in this story? (The King, and also the hungry, thirsty, stranger, sick, and prisoner.)\n2. Sit in it: Both groups are surprised. Imagine being told you met Jesus every time you sat with someone lonely. How would that change your week?\n3. Live it: Who is one person in your everyday life who is easy to overlook?"
+              "instructions": "Walk through the passage with the S.T.A.R.S. prompts below. Take a few answers for each letter, then ask the questions. There are no wrong answers.",
+              "script": "1. What do you hear God saying to you through this passage?\n2. What stood out to you about who Jesus says he is in this story?\n3. What was surprising about this passage?\n4. What feelings or emotions stirred in you in response to this passage?"
             }
           ]
         },
@@ -892,11 +892,11 @@
             },
             {
               "id": "bless-p-102",
-              "title": "Read It \u00b7 Sit In It \u00b7 Live It",
+              "title": "S.T.A.R.S.",
               "type": "discussion",
               "minutes": 6,
-              "instructions": "Walk through the passage together with the same three moves every week. Take a few answers for each. There are no wrong answers to \"Sit in it.\"",
-              "script": "1. Read it: How many questions does the woman ask Jesus? How does he answer them?\n2. Sit in it: Imagine you're her: you come to the well at noon, alone, and a stranger who knows your whole life offers you a gift instead of a lecture. What do you feel?\n3. Live it: Who in your life might be waiting for someone to just start the conversation?"
+              "instructions": "Walk through the passage with the S.T.A.R.S. prompts below. Take a few answers for each letter, then ask the questions. There are no wrong answers.",
+              "script": "1. What do you hear God saying to you through this passage?\n2. What stood out to you about how Jesus spoke to the Samaritan woman?\n3. What was surprising about this passage?\n4. What feelings or emotions stirred in you in response to this passage?"
             }
           ]
         },
