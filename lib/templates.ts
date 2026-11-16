@@ -23,7 +23,7 @@ export const TEMPLATES: ServiceTemplate[] = [
     description: 'Opening, Scripture, Teaching, Application, and Small Groups, the same shape as B.L.E.S.S. About 70 minutes.',
     sections: [
       { title: 'Opening', parts: [['Welcome', 'script', 4], ['Illustration', 'script', 6], ['Transition', 'prayer', 2]] },
-      { title: 'Scripture', parts: [['Background', 'script', 3], ['Read: Passage', 'bible-verse', 4], ['Read It · Sit In It · Live It', 'discussion', 6]] },
+      { title: 'Scripture', parts: [['Background', 'script', 3], ['Read: Passage', 'bible-verse', 4], ['S.T.A.R.S.', 'discussion', 6]] },
       { title: 'Teaching', parts: [['Point 1: ', 'script', 5], ['Point 2: ', 'script', 5], ['Point 3: ', 'script', 5]] },
       { title: 'Application', parts: [['Practice', 'prayer', 3], ['Weekly Challenge', 'script', 3]] },
       { title: 'Small Groups', parts: [['Icebreaker', 'discussion', 3], ['Discussion', 'discussion', 12], ['Prayer', 'prayer', 5]] },

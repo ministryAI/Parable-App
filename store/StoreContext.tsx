@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import { Database, LayoutPack, Part, PrintScope, Series, Service } from '../types';
 import { clonePart, newPart, newSeries, newService } from '../lib/factory';
 import { migrateLegacySeries, migrateRuns, reschedule, weeksOf } from '../lib/series';
+import { migrateStudySeries, migrateStudyServices } from '../lib/migrateStudy';
 import { AISettings, loadSettings, saveSettings } from '../services/aiSettings';
 import { testConnection } from '../services/aiService';
 import { SAMPLE_LAYOUTS, SAMPLES, seriesFingerprint } from '../lib/samples';
@@ -78,8 +79,8 @@ const readDb = (): Database => {
         Array.isArray(data.services) ? data.services : [],
         rawSeries.map((x) => newSeries(x as Record<string, unknown>)),
       );
-      const { services } = legacy;
-      const series = migrateRuns(legacy.series, services, rawSeries);
+      const services = migrateStudyServices(legacy.services);
+      const series = migrateStudySeries(migrateRuns(legacy.series, services, rawSeries));
       const layouts = Array.isArray(data.layouts) ? data.layouts.flatMap((l: unknown) => { try { return [readLayout(l)]; } catch { return []; } }) : [];
       return { version: 1, series, services, library: Array.isArray(data.library) ? data.library.map(newPart) : [], layouts };
     }

@@ -43,7 +43,7 @@ Opening
 Scripture
 - Use a complete passage, not a single verse pulled out of context.
 - Background gives genre, setting, and one sentence placing the passage in God's big story.
-- Study method: read it (what does it say?), sit inside it (where are you in this story?), live it (what would it look like to try this?).
+- Study method: S.T.A.R.S. (Something familiar, Themes, Attributes of God, Repetition, Something surprising), then 3 to 4 discussion questions on the passage: what God is saying, what stood out, what was surprising, what it stirred.
 - When the passage has a hard or confusing part, name it. Do not skip it.
 
 Teaching
