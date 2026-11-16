@@ -14,6 +14,7 @@ interface ChatMessage {
 const VOICE = [
   'No cheesy lines. Write the way a thoughtful leader actually talks to this age group, plainly and specifically.',
   'Never use stock ministry or youth-group phrases: "God can handle it", "every bit of it", "God\'s got this", "on fire for God", "let go and let God", "God-sized", "a God thing", "Jesus is the reason", "doing life together", "unpack", "heart check".',
+  'Write the lesson only, for a small church with one leader: never add greeters, hosts, door or newcomer routines, check-in systems, volunteer or student roles prepared ahead, tech, or event logistics.',
   'No puns, no forced excitement ("How awesome is that?!"), no exclamation-mark hype, no slogans. Say the true thing once, in ordinary words.',
 ].join(' ');
 

@@ -1,0 +1,289 @@
+[
+ {
+  "service": "bless-week-1",
+  "field": "bigIdea",
+  "from": "Before we try to reach people, we pray for them, and prayer is an ongoing conversation with a God who already loves them.",
+  "to": "Before we try to reach people, we pray for them. Prayer is an ongoing conversation with a God who already loves them."
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-1",
+  "field": "instructions",
+  "from": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-1",
+  "field": "script",
+  "from": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nTonight we start a new series called B.L.E.S.S. Five weeks, five simple ways to join what God is already doing in the people around you.\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: What's your phone battery at right now? [Students can hold up fingers: 1 for almost dead, 5 for full.] [Take a few answers. Anyone can pass.]",
+  "to": "Welcome in! If this is your first time here, we're really glad you came.\n\nTonight we start a new series called B.L.E.S.S. Five weeks, five simple ways to join what God is already doing in the people around you.\n\nQuick check-in: What's your phone battery at right now? [Students can hold up fingers: 1 for almost dead, 5 for full.] [Take a few answers. Anyone can pass.]"
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-4",
+  "field": "instructions",
+  "from": "Hold up your phone (or show the dead-battery icon). Have a short, real story ready about your phone dying at the worst time.",
+  "to": "Hold up your phone. Have a short, real story ready about your phone dying at the worst time."
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-4",
+  "field": "supplies",
+  "from": [
+   {
+    "id": "bless-x-2",
+    "name": "Your phone, or a slide of a dead-battery icon",
+    "qty": 1,
+    "per": "total"
+   },
+   {
+    "id": "bless-x-3",
+    "name": "A charger",
+    "qty": 1,
+    "per": "total"
+   }
+  ],
+  "to": [
+   {
+    "id": "bless-x-2",
+    "name": "Your phone",
+    "qty": 1,
+    "per": "total"
+   },
+   {
+    "id": "bless-x-3",
+    "name": "A charger",
+    "qty": 1,
+    "per": "total"
+   }
+  ]
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-8",
+  "field": "instructions",
+  "from": "Have your student reader read Colossians 1:3\u201312 aloud from a Bible or a Bible app. Everyone else can follow along on a phone or a printed copy.",
+  "to": "Read Colossians 1:3\u201312 aloud, or ask a student who wants to read. Everyone else can follow along in a Bible or on a phone."
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-8",
+  "field": "leaderNotes",
+  "from": "Student role: by midweek, ask a student to read the passage and send it to them so they can practice. Thank them by name afterward.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-11",
+  "field": "script",
+  "from": "[Ask first:] Has anyone ever prayed about something once and then completely forgot about it? [Take a few answers. Laugh with them; everybody has.]\n\nLook at the repetition: \"We always thank God\u2026 when we pray\" (v. 3). \"We have not stopped praying for you\" (v. 9). \"We continually ask\" (v. 9).\n\nPrayer isn't a vending machine where you put in a request and wait for the snack to drop. It's more like a group chat that stays open all day. You keep coming back to it because you're in a relationship with the person on the other end.\n\nThat's what Christians believe prayer is: talking with Jesus, who already loves you and already loves the people you're praying for even more than you do.",
+  "to": "[Ask first:] Has anyone ever prayed about something once and then completely forgotten about it? [Take a few answers. Laugh with them; everybody has.]\n\nLook at the repetition: \"We always thank God\u2026 when we pray\" (v. 3). \"We have not stopped praying for you\" (v. 9). \"We continually ask\" (v. 9).\n\nPrayer isn't a vending machine where you put in a request and wait for the snack to drop. It's more like a group chat that stays open all day. You keep coming back to it because you're in a relationship with the person on the other end.\n\nThat's what Christians believe prayer is: talking with Jesus, who already loves you and already loves the people you're praying for even more than you do."
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-20",
+  "field": "instructions",
+  "from": "FRANCS helps students notice the people God has placed around them. Give everyone paper and a pen. Read each category and give a moment to write names:\n\n\u2022 Friends: Who do you choose to spend time with?\n\u2022 Relatives: Who is in your family, near or far?\n\u2022 Acquaintances: Who do you cross paths with regularly?\n\u2022 Neighbors: Who lives near you?\n\u2022 Classmates: Who do you see in class, at lunch, on the bus, or at practice?\n\u2022 Strangers: Who do you pass often but have never really met?\n\nThen hand out an index card to each student. This is their BLESS card. Ask them to choose three names from their map and write them on the card. Suggest they keep it in a phone case, wallet, or planner. They'll use it every week.",
+  "to": "FRANCS helps students notice the people God has placed around them. Give everyone paper and a pen. Read each category aloud and give students a moment to write names:\n\n\u2022 Friends: Who do you choose to spend time with?\n\u2022 Relatives: Who is in your family, near or far?\n\u2022 Acquaintances: Who do you cross paths with regularly?\n\u2022 Neighbors: Who lives near you?\n\u2022 Classmates: Who do you see in class, at lunch, on the bus, or at practice?\n\u2022 Strangers: Who do you pass often but have never really met?\n\nThen hand out an index card to each student. This is their BLESS card. Ask them to choose three names from their map and write them on the card. Suggest they keep it in a phone case, wallet, or planner. They'll use it every week."
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-20",
+  "field": "supplies",
+  "from": [
+   {
+    "id": "bless-x-17",
+    "name": "Pens",
+    "qty": 1,
+    "per": "person"
+   },
+   {
+    "id": "bless-x-18",
+    "name": "Sheets of paper",
+    "qty": 1,
+    "per": "person"
+   },
+   {
+    "id": "bless-x-19",
+    "name": "Index cards for BLESS cards",
+    "qty": 1,
+    "per": "person"
+   }
+  ],
+  "to": [
+   {
+    "id": "bless-x-17",
+    "name": "Pens",
+    "qty": 1,
+    "per": "person"
+   },
+   {
+    "id": "bless-x-18",
+    "name": "Sheets of paper",
+    "qty": 1,
+    "per": "person"
+   },
+   {
+    "id": "bless-x-19",
+    "name": "Index cards (BLESS cards)",
+    "qty": 1,
+    "per": "person"
+   }
+  ]
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-22",
+  "field": "instructions",
+  "from": "Same format every week. Have students take out their BLESS card with their three names. New students can write three names on a spare card now. Keep the room quiet and unhurried.",
+  "to": "Have students hold the BLESS card they just made. Keep the room quiet and unhurried."
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-22",
+  "field": "script",
+  "from": "Take out your BLESS card. [Pause.] These are three people God has put in your life.\n\n[30 seconds of silence.] Just hold the card and pray for each name. You don't need fancy words. Their name is a prayer.\n\nNow let's pray for them together for the first time. [Lead a one-sentence prayer: \"God, these are people you love. Help them know you, and help me love them well.\" Then 30 more seconds of silence.]",
+  "to": "Hold your BLESS card. [Pause.] These are three people God has put in your life.\n\n[30 seconds of silence.] Just hold the card and pray for each name. You don't need fancy words. Their name is a prayer.\n\nNow let's pray for them together for the first time. [Lead a one-sentence prayer: \"God, these are people you love. Help them know you, and help me love them well.\" Then 30 more seconds of silence.]"
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-22",
+  "field": "supplies",
+  "from": [
+   {
+    "id": "bless-x-21",
+    "name": "BLESS cards from week 1 (spare index cards for anyone new)",
+    "qty": 1,
+    "per": "person"
+   }
+  ],
+  "to": []
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-23",
+  "field": "script",
+  "from": "Here's an experiment for this week: pray for your three names once a day. Try this and notice what happens, in them and in you.\n\nIt can take ten seconds. Set a daily reminder on your phone, or pray when you see the card. Next week we'll talk about what you noticed.",
+  "to": "Here's an experiment for this week: pray for your three names once a day, and notice what happens in them and in you.\n\nIt can take ten seconds. Set a daily reminder on your phone, or pray when you see the card. Next week we'll talk about what you noticed."
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-27",
+  "field": "script",
+  "from": "30 seconds of silence. Then teach a prayer students can use alone: hold your BLESS card and pray each name, \"God, show (name) how much you love them.\" Close by thanking God that he hears every prayer, even the ones that feel stuck.",
+  "to": "Start with 30 seconds of silence. Then teach a prayer students can use alone: hold your BLESS card and pray each name, \"God, show (name) how much you love them.\" Close by thanking God that he hears every prayer, even the ones that feel stuck."
+ },
+ {
+  "service": "bless-week-2",
+  "part": "bless-p-29",
+  "field": "instructions",
+  "from": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-2",
+  "part": "bless-p-29",
+  "field": "script",
+  "from": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: One word for your week so far. [Take a few answers. Anyone can pass.]",
+  "to": "Welcome in! If this is your first time here, we're really glad you came.\n\nQuick check-in: One word for your week so far. [Take a few answers. Anyone can pass.]"
+ },
+ {
+  "service": "bless-week-2",
+  "part": "bless-p-33",
+  "field": "leaderNotes",
+  "from": "Student role: ask a student ahead of time to help you demo the game up front.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-2",
+  "part": "bless-p-37",
+  "field": "leaderNotes",
+  "from": "Student role: by midweek, ask a student to read the passage and send it to them to practice.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-3",
+  "part": "bless-p-52",
+  "field": "instructions",
+  "from": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-3",
+  "part": "bless-p-52",
+  "field": "script",
+  "from": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: What did you eat for lunch today? [Thumbs up or down on how it was.] [Take a few answers. Anyone can pass.]",
+  "to": "Welcome in! If this is your first time here, we're really glad you came.\n\nQuick check-in: What did you eat for lunch today? [Thumbs up or down on how it was.] [Take a few answers. Anyone can pass.]"
+ },
+ {
+  "service": "bless-week-3",
+  "part": "bless-p-53",
+  "field": "leaderNotes",
+  "from": "Student role: ask a student ahead of time to run this game from the front. Give them the list by midweek.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-3",
+  "part": "bless-p-57",
+  "field": "leaderNotes",
+  "from": "Student role: by midweek, ask a student to read the passage and send it to them to practice.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-4",
+  "part": "bless-p-74",
+  "field": "instructions",
+  "from": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-4",
+  "part": "bless-p-74",
+  "field": "script",
+  "from": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nLast week's challenge was to share a table. Did anyone eat with someone new? [Take one or two quick stories.]\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: High or low: what was the best part and the hardest part of your week? [One word each. Anyone can pass.] [Take a few answers. Anyone can pass.]",
+  "to": "Welcome in! If this is your first time here, we're really glad you came.\n\nLast week's challenge was to share a table. Did anyone eat with someone new? [Take one or two quick stories.]\n\nQuick check-in: High or low: what was the best part and the hardest part of your week? [One word each. Take a few answers. Anyone can pass.]"
+ },
+ {
+  "service": "bless-week-4",
+  "part": "bless-p-81",
+  "field": "leaderNotes",
+  "from": "Student role: by midweek, ask two students to read the passage, one reading the King's words and one reading everything else. Send it to them to practice.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-4",
+  "part": "bless-p-90",
+  "field": "leaderNotes",
+  "from": "If your group can, plan an optional group serve this week with a local partner your church already knows, where students work side by side with the people they serve. Follow your church's safety policy for any off-site event.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-5",
+  "part": "bless-p-96",
+  "field": "instructions",
+  "from": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-5",
+  "part": "bless-p-96",
+  "field": "script",
+  "from": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nLast week's challenge was to serve alongside someone. We'll talk about that in small groups tonight.\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: What's a story you've told so many times your friends could tell it for you? [Take a few answers. Anyone can pass.]",
+  "to": "Welcome in! If this is your first time here, we're really glad you came.\n\nLast week's challenge was to serve alongside someone. We'll talk about that in small groups tonight.\n\nQuick check-in: What's a story you've told so many times your friends could tell it for you? [Take a few answers. Anyone can pass.]"
+ },
+ {
+  "service": "bless-week-5",
+  "part": "bless-p-101",
+  "field": "leaderNotes",
+  "from": "Student role: ask two students by midweek to read: one reads Jesus, one reads the woman, and you read the narration. Send them the passage to practice.",
+  "to": ""
+ },
+ {
+  "service": "bless-week-5",
+  "part": "bless-p-108",
+  "field": "leaderNotes",
+  "from": "Optional student role: ask a student ahead of time if they'd like to share a one-minute story of where they have seen God. Never put a student on the spot.",
+  "to": ""
+ }
+]

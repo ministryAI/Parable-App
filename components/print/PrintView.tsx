@@ -506,7 +506,7 @@ const SessionPlan: React.FC<{ service: Service; series?: Series }> = ({ service,
     supplies.length ? `Gather ${supplies.length} supply item${supplies.length === 1 ? '' : 's'}` : '',
     media.length ? `Queue ${media.length} song${media.length === 1 ? '' : 's'} / video${media.length === 1 ? '' : 's'}` : '',
     notReady ? `Finish ${notReady} part${notReady === 1 ? '' : 's'} that still need content` : '',
-    `Brief your ${service.groupCount} small group leader${service.groupCount === 1 ? '' : 's'}`,
+    'Brief your small group leaders',
   ].filter(Boolean);
   return (
     <section className="pr-plan pr-page">
@@ -749,8 +749,11 @@ const SectionBlock: React.FC<{ service: Service; section: Section; schedule: Rec
 // "The setup: Pair students…" → a bold lead-in, the way printed curricula set them.
 const LEAD = /^([A-Z][^:.?!"“]{1,38}):\s+/;
 const Rich: React.FC<{ text: string }> = ({ text }) => {
-  const m = text.match(LEAD);
-  const body = m ? text.slice(m[0].length) : text;
+  // A short label ("The setup: Pair students…") becomes a bold lead-in; a whole sentence before a colon stays as written.
+  const found = text.match(LEAD);
+  const m = found && found[1].trim().split(/\s+/).length <= 4 ? found : null;
+  const rest = m ? text.slice(m[0].length) : text;
+  const body = m ? rest.charAt(0).toUpperCase() + rest.slice(1) : rest;
   return (
     <>
       {m && <b className="pr-lead">{m[1]}. </b>}
@@ -961,7 +964,18 @@ const TakeHome: React.FC<{ service: Service; series?: Series }> = ({ service, se
   );
 };
 
-const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n).replace(/\s+\S*$/, '')}…` : s);
+// Shortened for a summary box: whole sentences up to the limit, never cut off mid-sentence.
+const clip = (s: string, n: number) => {
+  const text = s.replace(/\s+/g, ' ').trim();
+  if (text.length <= n) return text;
+  const sentences = text.match(/[^.!?]+[.!?]+["”’)]*\s*/g) ?? [text];
+  let out = '';
+  for (const sentence of sentences) {
+    if (out && (out + sentence).length > n) break;
+    out += sentence;
+  }
+  return out.trim();
+};
 
 // ---------- Compact documents ----------
 

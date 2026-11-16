@@ -1,4 +1,4 @@
-import { DEFAULT_PLAYBOOK } from '../lib/playbook';
+import { DEFAULT_PLAYBOOK, updatePlaybook } from '../lib/playbook';
 
 // 'steward' is the user's own FastAPI server in front of Ollama (handles CORS, thinking, keep-alive).
 export type AIServer = 'auto' | 'ollama' | 'steward' | 'openai';
@@ -44,7 +44,8 @@ export const loadSettings = (): AISettings => {
     if (raw) {
       const saved = JSON.parse(raw);
       // Settings saved before the on/off switch existed belong to someone who already set up a server.
-      return { ...DEFAULT_SETTINGS, enabled: true, ...saved };
+      const settings = { ...DEFAULT_SETTINGS, enabled: true, ...saved };
+      return { ...settings, playbook: updatePlaybook(settings.playbook ?? '') };
     }
   } catch {
     // storage unavailable or corrupt; fall back to defaults

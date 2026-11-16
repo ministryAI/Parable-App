@@ -39,7 +39,7 @@
       "title": "Begin With Prayer",
       "scripture": "Colossians 1:3\u201312",
       "keyVerse": "For this reason, since the day we heard about you, we have not stopped praying for you. (Colossians 1:9)",
-      "bigIdea": "Before we try to reach people, we pray for them, and prayer is an ongoing conversation with a God who already loves them.",
+      "bigIdea": "Before we try to reach people, we pray for them. Prayer is an ongoing conversation with a God who already loves them.",
       "objectives": "Name the people God has placed in their life using FRANCS\nChoose three people and pray for them together\nDescribe prayer as an ongoing conversation with God, not a one-time wish list",
       "sections": [
         {
@@ -52,8 +52,8 @@
               "title": "Welcome",
               "type": "script",
               "minutes": 4,
-              "instructions": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
-              "script": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nTonight we start a new series called B.L.E.S.S. Five weeks, five simple ways to join what God is already doing in the people around you.\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: What's your phone battery at right now? [Students can hold up fingers: 1 for almost dead, 5 for full.] [Take a few answers. Anyone can pass.]"
+              "instructions": "",
+              "script": "Welcome in! If this is your first time here, we're really glad you came.\n\nTonight we start a new series called B.L.E.S.S. Five weeks, five simple ways to join what God is already doing in the people around you.\n\nQuick check-in: What's your phone battery at right now? [Students can hold up fingers: 1 for almost dead, 5 for full.] [Take a few answers. Anyone can pass.]"
             },
             {
               "id": "bless-p-4",
@@ -63,7 +63,7 @@
               "supplies": [
                 {
                   "id": "bless-x-2",
-                  "name": "Your phone, or a slide of a dead-battery icon",
+                  "name": "Your phone",
                   "qty": 1,
                   "per": "total"
                 },
@@ -74,7 +74,7 @@
                   "per": "total"
                 }
               ],
-              "instructions": "Hold up your phone (or show the dead-battery icon). Have a short, real story ready about your phone dying at the worst time.",
+              "instructions": "Hold up your phone. Have a short, real story ready about your phone dying at the worst time.",
               "script": "What's the worst possible moment for your phone to die? [Take answers: the middle of a game, when you need a ride, right before you send the text.]\n\n[Share your story in a minute or less.]\n\n[Hold up the charger.] When a phone dies, people will ask total strangers for a charger. We know a phone without power is just a very expensive rock.\n\nFollowing Jesus can work the same way. We try to be kind, to invite people, to be a light, and we wonder why we feel drained. Tonight is about the power source."
             },
             {
@@ -103,8 +103,8 @@
               "title": "Read: Colossians 1:3\u201312",
               "type": "bible-verse",
               "minutes": 3,
-              "instructions": "Have your student reader read Colossians 1:3\u201312 aloud from a Bible or a Bible app. Everyone else can follow along on a phone or a printed copy.",
-              "leaderNotes": "Student role: by midweek, ask a student to read the passage and send it to them so they can practice. Thank them by name afterward."
+              "instructions": "Read Colossians 1:3\u201312 aloud, or ask a student who wants to read. Everyone else can follow along in a Bible or on a phone.",
+              "leaderNotes": ""
             },
             {
               "id": "bless-p-9",
@@ -126,7 +126,7 @@
               "title": "Point 1: Prayer is a conversation, not a one-time wish list",
               "type": "script",
               "minutes": 5,
-              "script": "[Ask first:] Has anyone ever prayed about something once and then completely forgot about it? [Take a few answers. Laugh with them; everybody has.]\n\nLook at the repetition: \"We always thank God\u2026 when we pray\" (v. 3). \"We have not stopped praying for you\" (v. 9). \"We continually ask\" (v. 9).\n\nPrayer isn't a vending machine where you put in a request and wait for the snack to drop. It's more like a group chat that stays open all day. You keep coming back to it because you're in a relationship with the person on the other end.\n\nThat's what Christians believe prayer is: talking with Jesus, who already loves you and already loves the people you're praying for even more than you do."
+              "script": "[Ask first:] Has anyone ever prayed about something once and then completely forgotten about it? [Take a few answers. Laugh with them; everybody has.]\n\nLook at the repetition: \"We always thank God\u2026 when we pray\" (v. 3). \"We have not stopped praying for you\" (v. 9). \"We continually ask\" (v. 9).\n\nPrayer isn't a vending machine where you put in a request and wait for the snack to drop. It's more like a group chat that stays open all day. You keep coming back to it because you're in a relationship with the person on the other end.\n\nThat's what Christians believe prayer is: talking with Jesus, who already loves you and already loves the people you're praying for even more than you do."
             },
             {
               "id": "bless-p-14",
@@ -183,35 +183,28 @@
                 },
                 {
                   "id": "bless-x-19",
-                  "name": "Index cards for BLESS cards",
+                  "name": "Index cards (BLESS cards)",
                   "qty": 1,
                   "per": "person"
                 }
               ],
-              "instructions": "FRANCS helps students notice the people God has placed around them. Give everyone paper and a pen. Read each category and give a moment to write names:\n\n\u2022 Friends: Who do you choose to spend time with?\n\u2022 Relatives: Who is in your family, near or far?\n\u2022 Acquaintances: Who do you cross paths with regularly?\n\u2022 Neighbors: Who lives near you?\n\u2022 Classmates: Who do you see in class, at lunch, on the bus, or at practice?\n\u2022 Strangers: Who do you pass often but have never really met?\n\nThen hand out an index card to each student. This is their BLESS card. Ask them to choose three names from their map and write them on the card. Suggest they keep it in a phone case, wallet, or planner. They'll use it every week."
+              "instructions": "FRANCS helps students notice the people God has placed around them. Give everyone paper and a pen. Read each category aloud and give students a moment to write names:\n\n\u2022 Friends: Who do you choose to spend time with?\n\u2022 Relatives: Who is in your family, near or far?\n\u2022 Acquaintances: Who do you cross paths with regularly?\n\u2022 Neighbors: Who lives near you?\n\u2022 Classmates: Who do you see in class, at lunch, on the bus, or at practice?\n\u2022 Strangers: Who do you pass often but have never really met?\n\nThen hand out an index card to each student. This is their BLESS card. Ask them to choose three names from their map and write them on the card. Suggest they keep it in a phone case, wallet, or planner. They'll use it every week."
             },
             {
               "id": "bless-p-22",
               "title": "Practice: The Three Names",
               "type": "prayer",
               "minutes": 3,
-              "supplies": [
-                {
-                  "id": "bless-x-21",
-                  "name": "BLESS cards from week 1 (spare index cards for anyone new)",
-                  "qty": 1,
-                  "per": "person"
-                }
-              ],
-              "instructions": "Same format every week. Have students take out their BLESS card with their three names. New students can write three names on a spare card now. Keep the room quiet and unhurried.",
-              "script": "Take out your BLESS card. [Pause.] These are three people God has put in your life.\n\n[30 seconds of silence.] Just hold the card and pray for each name. You don't need fancy words. Their name is a prayer.\n\nNow let's pray for them together for the first time. [Lead a one-sentence prayer: \"God, these are people you love. Help them know you, and help me love them well.\" Then 30 more seconds of silence.]"
+              "supplies": [],
+              "instructions": "Have students hold the BLESS card they just made. Keep the room quiet and unhurried.",
+              "script": "Hold your BLESS card. [Pause.] These are three people God has put in your life.\n\n[30 seconds of silence.] Just hold the card and pray for each name. You don't need fancy words. Their name is a prayer.\n\nNow let's pray for them together for the first time. [Lead a one-sentence prayer: \"God, these are people you love. Help them know you, and help me love them well.\" Then 30 more seconds of silence.]"
             },
             {
               "id": "bless-p-23",
               "title": "Weekly Challenge: Pray for Your Three Names",
               "type": "script",
               "minutes": 2,
-              "script": "Here's an experiment for this week: pray for your three names once a day. Try this and notice what happens, in them and in you.\n\nIt can take ten seconds. Set a daily reminder on your phone, or pray when you see the card. Next week we'll talk about what you noticed."
+              "script": "Here's an experiment for this week: pray for your three names once a day, and notice what happens in them and in you.\n\nIt can take ten seconds. Set a daily reminder on your phone, or pray when you see the card. Next week we'll talk about what you noticed."
             }
           ]
         },
@@ -241,7 +234,7 @@
               "title": "Prayer",
               "type": "prayer",
               "minutes": 5,
-              "script": "30 seconds of silence. Then teach a prayer students can use alone: hold your BLESS card and pray each name, \"God, show (name) how much you love them.\" Close by thanking God that he hears every prayer, even the ones that feel stuck."
+              "script": "Start with 30 seconds of silence. Then teach a prayer students can use alone: hold your BLESS card and pray each name, \"God, show (name) how much you love them.\" Close by thanking God that he hears every prayer, even the ones that feel stuck."
             }
           ]
         }
@@ -281,8 +274,8 @@
               "title": "Welcome",
               "type": "script",
               "minutes": 4,
-              "instructions": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
-              "script": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: One word for your week so far. [Take a few answers. Anyone can pass.]"
+              "instructions": "",
+              "script": "Welcome in! If this is your first time here, we're really glad you came.\n\nQuick check-in: One word for your week so far. [Take a few answers. Anyone can pass.]"
             },
             {
               "id": "bless-p-33",
@@ -310,7 +303,7 @@
                 }
               ],
               "instructions": "The setup: Pair students up and have them sit back-to-back. Give Student A a blank sheet and a pen. Give Student B a card with an abstract shape on it (or a simple picture, like a house with a chimney and a tree). Groups of three are fine for anyone without a partner.\n\nThe activity: Student B describes the picture without naming it. Student A draws but can't speak, only listen. 60 seconds. Then switch roles with a new card, and this time Student A may ask questions.\n\nCompare the drawings with the cards. Expect laughter. Celebrate the worst drawing as loudly as the best.",
-              "leaderNotes": "Student role: ask a student ahead of time to help you demo the game up front."
+              "leaderNotes": ""
             },
             {
               "id": "bless-p-34",
@@ -338,7 +331,7 @@
               "title": "Read: Acts 8:26\u201338",
               "type": "bible-verse",
               "minutes": 4,
-              "leaderNotes": "Student role: by midweek, ask a student to read the passage and send it to them to practice.",
+              "leaderNotes": "",
               "script": "Now an angel of the Lord said to Philip, \"Go south to the road\u2014the desert road\u2014that goes down from Jerusalem to Gaza.\" So he started out, and on his way he met an Ethiopian eunuch, an important official in charge of all the treasury of the Kandake (which means \"queen of the Ethiopians\"). This man had gone to Jerusalem to worship, and on his way home was sitting in his chariot reading the Book of Isaiah the prophet. The Spirit told Philip, \"Go to that chariot and stay near it.\"\n\nThen Philip ran up to the chariot and heard the man reading Isaiah the prophet. \"Do you understand what you are reading?\" Philip asked.\n\n\"How can I,\" he said, \"unless someone explains it to me?\" So he invited Philip to come up and sit with him.\n\nThis is the passage of Scripture the eunuch was reading: \"He was led like a sheep to the slaughter, and as a lamb before its shearer is silent, so he did not open his mouth. In his humiliation he was deprived of justice. Who can speak of his descendants? For his life was taken from the earth.\"\n\nThe eunuch asked Philip, \"Tell me, please, who is the prophet talking about, himself or someone else?\" Then Philip began with that very passage of Scripture and told him the good news about Jesus. As they traveled along the road, they came to some water and the eunuch said, \"Look, here is water. What can stand in the way of my being baptized?\" And he gave orders to stop the chariot. Then both Philip and the eunuch went down into the water and Philip baptized him."
             },
             {
@@ -475,8 +468,8 @@
               "title": "Welcome",
               "type": "script",
               "minutes": 4,
-              "instructions": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
-              "script": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: What did you eat for lunch today? [Thumbs up or down on how it was.] [Take a few answers. Anyone can pass.]"
+              "instructions": "",
+              "script": "Welcome in! If this is your first time here, we're really glad you came.\n\nQuick check-in: What did you eat for lunch today? [Thumbs up or down on how it was.] [Take a few answers. Anyone can pass.]"
             },
             {
               "id": "bless-p-53",
@@ -484,7 +477,7 @@
               "type": "game",
               "minutes": 8,
               "instructions": "The goal: find common ground through quick food choices. No supplies needed. Students who would rather not move can point instead.\n\nThe activity: Make one side of the room Option A and the other Option B. Call out a pairing; students move to their side. Once they land, they have 30 seconds to find someone on their side, ideally someone they don't know well, and answer the follow-up question. Anyone can pass.\n\n1. Tacos or Pizza? What's your favorite food from when you were little?\n2. Sweet or Salty? What's your go-to movie-night snack?\n3. Homemade or Fast Food? If you had to cook one meal for your friends, what would it be?\n4. Pancakes or Waffles? What's a food everyone likes but you don't?\n5. \"Table for two\" or \"Party of eight\"? Who would you most want to share a meal with?\n\nThe point: food sets the table for connection, even with people you barely know.",
-              "leaderNotes": "Student role: ask a student ahead of time to run this game from the front. Give them the list by midweek."
+              "leaderNotes": ""
             },
             {
               "id": "bless-p-54",
@@ -512,7 +505,7 @@
               "title": "Read: Luke 5:27\u201332",
               "type": "bible-verse",
               "minutes": 3,
-              "leaderNotes": "Student role: by midweek, ask a student to read the passage and send it to them to practice.",
+              "leaderNotes": "",
               "script": "27 After this, Jesus went out and saw a tax collector by the name of Levi sitting at his tax booth. \"Follow me,\" Jesus said to him, 28 and Levi got up, left everything and followed him.\n\n29 Then Levi held a great banquet for Jesus at his house, and a large crowd of tax collectors and others were eating with them. 30 But the Pharisees and the teachers of the law who belonged to their sect complained to his disciples, \"Why do you eat and drink with tax collectors and sinners?\"\n\n31 Jesus answered them, \"It is not the healthy who need a doctor, but the sick. 32 I have not come to call the righteous, but sinners to repentance.\""
             },
             {
@@ -662,8 +655,8 @@
               "title": "Welcome",
               "type": "script",
               "minutes": 4,
-              "instructions": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
-              "script": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nLast week's challenge was to share a table. Did anyone eat with someone new? [Take one or two quick stories.]\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: High or low: what was the best part and the hardest part of your week? [One word each. Anyone can pass.] [Take a few answers. Anyone can pass.]"
+              "instructions": "",
+              "script": "Welcome in! If this is your first time here, we're really glad you came.\n\nLast week's challenge was to share a table. Did anyone eat with someone new? [Take one or two quick stories.]\n\nQuick check-in: High or low: what was the best part and the hardest part of your week? [One word each. Take a few answers. Anyone can pass.]"
             },
             {
               "id": "bless-p-78",
@@ -712,7 +705,7 @@
               "title": "Read: Matthew 25:31\u201346",
               "type": "bible-verse",
               "minutes": 5,
-              "leaderNotes": "Student role: by midweek, ask two students to read the passage, one reading the King's words and one reading everything else. Send it to them to practice.",
+              "leaderNotes": "",
               "script": "31 \"When the Son of Man comes in his glory, and all the angels with him, he will sit on his glorious throne. 32 All the nations will be gathered before him, and he will separate the people one from another as a shepherd separates the sheep from the goats. 33 He will put the sheep on his right and the goats on his left.\n\n34 \"Then the King will say to those on his right, 'Come, you who are blessed by my Father; take your inheritance, the kingdom prepared for you since the creation of the world. 35 For I was hungry and you gave me something to eat, I was thirsty and you gave me something to drink, I was a stranger and you invited me in, 36 I needed clothes and you clothed me, I was sick and you looked after me, I was in prison and you came to visit me.'\n\n37 \"Then the righteous will answer him, 'Lord, when did we see you hungry and feed you, or thirsty and give you something to drink? 38 When did we see you a stranger and invite you in, or needing clothes and clothe you? 39 When did we see you sick or in prison and go to visit you?'\n\n40 \"The King will reply, 'Truly I tell you, whatever you did for one of the least of these brothers and sisters of mine, you did for me.'\n\n41 \"Then he will say to those on his left, 'Depart from me, you who are cursed, into the eternal fire prepared for the devil and his angels. 42 For I was hungry and you gave me nothing to eat, I was thirsty and you gave me nothing to drink, 43 I was a stranger and you did not invite me in, I needed clothes and you did not clothe me, I was sick and in prison and you did not look after me.'\n\n44 \"They also will answer, 'Lord, when did we see you hungry or thirsty or a stranger or needing clothes or sick or in prison, and did not help you?'\n\n45 \"He will reply, 'Truly I tell you, whatever you did not do for one of the least of these, you did not do for me.'\n\n46 \"Then they will go away to eternal punishment, but the righteous to eternal life.\""
             },
             {
@@ -780,7 +773,7 @@
               "type": "script",
               "minutes": 4,
               "script": "This week's experiment is a service challenge with real people.\n\nNotice: who in your hallway, bus, team, or neighborhood gets overlooked? Write their name on the back of your BLESS card.\n\nBe with them: do one thing alongside them as a friend. Sit with them, join something they care about, or help with what they're already doing. Learn their name and listen. Try it and notice what happens; next week we'll talk about it.",
-              "leaderNotes": "If your group can, plan an optional group serve this week with a local partner your church already knows, where students work side by side with the people they serve. Follow your church's safety policy for any off-site event."
+              "leaderNotes": ""
             }
           ]
         },
@@ -850,8 +843,8 @@
               "title": "Welcome",
               "type": "script",
               "minutes": 4,
-              "instructions": "Same rhythm every week:\n\n\u2022 At the door: greet every student by name. If you don't know a name yet, ask, and use it tonight.\n\u2022 Newcomers: introduce each new student to a host student (chosen ahead of time) who sits with them, introduces them to their small group leader, and walks with them to group.\n\u2022 Check-in: everyone answers one quick question with a word or a thumbs up, sideways, or down. Anyone can pass.",
-              "script": "Welcome in! If this is your first time here, we're really glad you came. [Point out the host students.] These friends will hang out with you tonight so you're not on your own.\n\nLast week's challenge was to serve alongside someone. We'll talk about that in small groups tonight.\n\nYou don't have to leave anything at the door tonight. Bring your worries, your questions, your good news, all of it. God can handle every bit of it.\n\nQuick check-in: What's a story you've told so many times your friends could tell it for you? [Take a few answers. Anyone can pass.]"
+              "instructions": "",
+              "script": "Welcome in! If this is your first time here, we're really glad you came.\n\nLast week's challenge was to serve alongside someone. We'll talk about that in small groups tonight.\n\nQuick check-in: What's a story you've told so many times your friends could tell it for you? [Take a few answers. Anyone can pass.]"
             },
             {
               "id": "bless-p-97",
@@ -887,7 +880,7 @@
               "title": "Read: John 4:1\u201326, 39\u201342",
               "type": "bible-verse",
               "minutes": 5,
-              "leaderNotes": "Student role: ask two students by midweek to read: one reads Jesus, one reads the woman, and you read the narration. Send them the passage to practice.",
+              "leaderNotes": "",
               "script": "Now Jesus learned that the Pharisees had heard that he was gaining and baptizing more disciples than John\u2014 2 although in fact it was not Jesus who baptized, but his disciples. 3 So he left Judea and went back once more to Galilee.\n\n4 Now he had to go through Samaria. 5 So he came to a town in Samaria called Sychar, near the plot of ground Jacob had given to his son Joseph. 6 Jacob's well was there, and Jesus, tired as he was from the journey, sat down by the well. It was about noon.\n\n7 When a Samaritan woman came to draw water, Jesus said to her, \"Will you give me a drink?\" 8 (His disciples had gone into the town to buy food.)\n\n9 The Samaritan woman said to him, \"You are a Jew and I am a Samaritan woman. How can you ask me for a drink?\" (For Jews do not associate with Samaritans.)\n\n10 Jesus answered her, \"If you knew the gift of God and who it is that asks you for a drink, you would have asked him and he would have given you living water.\"\n\n11 \"Sir,\" the woman said, \"you have nothing to draw with and the well is deep. Where can you get this living water? 12 Are you greater than our father Jacob, who gave us the well and drank from it himself, as did also his sons and his livestock?\"\n\n[Continue reading from a Bible through verse 26.]\n\n25 The woman said, \"I know that Messiah\" (called Christ) \"is coming. When he comes, he will explain everything to us.\" 26 Then Jesus declared, \"I, the one speaking to you\u2014I am he.\"\n\n39 Many of the Samaritans from that town believed in him because of the woman's testimony, \"He told me everything I ever did.\" 40 So when the Samaritans came to him, they urged him to stay with them, and he stayed two days. 41 And because of his words many more became believers.\n\n42 They said to the woman, \"We no longer believe just because of what you said; now we have heard for ourselves, and we know that this man really is the Savior of the world.\""
             },
             {
@@ -939,7 +932,7 @@
               "type": "script",
               "minutes": 5,
               "script": "She ran back to the town she'd been avoiding and said, \"Come, see a man who told me everything I ever did.\" She didn't have every answer. She still had questions. She just told what happened and invited people to come and see.\n\nAnd it worked: \"Many\u2026 believed in him because of the woman's testimony.\" Then they met Jesus for themselves (v. 42). Your job isn't to convince anyone. It's to point.\n\n[Leader: share your own story in about one minute, using the five fingers you're about to teach. Keep it short and honest.]",
-              "leaderNotes": "Optional student role: ask a student ahead of time if they'd like to share a one-minute story of where they have seen God. Never put a student on the spot."
+              "leaderNotes": ""
             }
           ]
         },
