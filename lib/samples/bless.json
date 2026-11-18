@@ -14,7 +14,20 @@
       "createdAt": 1790726400000,
       "updatedAt": 1791158400000,
       "runs": [],
-      "printRun": ""
+      "printRun": "",
+      "practiceCard": {
+        "label": "My three names",
+        "lines": 3,
+        "footer": "Pray for each name once a day.",
+        "back": [
+          "Begin with prayer",
+          "Listen with care",
+          "Eat together",
+          "Serve with love",
+          "Share the story"
+        ],
+        "writeIn": "Someone I'll serve alongside"
+      }
     }
   ],
   "services": [
@@ -183,12 +196,12 @@
                 },
                 {
                   "id": "bless-x-19",
-                  "name": "Index cards (BLESS cards)",
+                  "name": "Printed BLESS cards (the card sheets after this week's family page)",
                   "qty": 1,
                   "per": "person"
                 }
               ],
-              "instructions": "FRANCS helps students notice the people God has placed around them. Give everyone paper and a pen. Read each category aloud and give students a moment to write names:\n\n\u2022 Friends: Who do you choose to spend time with?\n\u2022 Relatives: Who is in your family, near or far?\n\u2022 Acquaintances: Who do you cross paths with regularly?\n\u2022 Neighbors: Who lives near you?\n\u2022 Classmates: Who do you see in class, at lunch, on the bus, or at practice?\n\u2022 Strangers: Who do you pass often but have never really met?\n\nThen hand out an index card to each student. This is their BLESS card. Ask them to choose three names from their map and write them on the card. Suggest they keep it in a phone case, wallet, or planner. They'll use it every week."
+              "instructions": "FRANCS helps students notice the people God has placed around them. Give everyone paper and a pen. Read each category aloud and give students a moment to write names:\n\n\u2022 Friends: Who do you choose to spend time with?\n\u2022 Relatives: Who is in your family, near or far?\n\u2022 Acquaintances: Who do you cross paths with regularly?\n\u2022 Neighbors: Who lives near you?\n\u2022 Classmates: Who do you see in class, at lunch, on the bus, or at practice?\n\u2022 Strangers: Who do you pass often but have never really met?\n\nThen hand out a BLESS card to each student (printed from the card sheets after this week's family page, or an index card). Ask them to choose three names from their map and write them on the card. Suggest they keep it in a phone case, wallet, or planner. They'll use it every week."
             },
             {
               "id": "bless-p-22",
@@ -385,7 +398,7 @@
               "supplies": [
                 {
                   "id": "bless-x-44",
-                  "name": "BLESS cards from week 1 (spare index cards for anyone new)",
+                  "name": "BLESS cards from week 1 (spare printed cards for anyone new)",
                   "qty": 1,
                   "per": "person"
                 }
@@ -559,7 +572,7 @@
               "supplies": [
                 {
                   "id": "bless-x-64",
-                  "name": "BLESS cards from week 1 (spare index cards for anyone new)",
+                  "name": "BLESS cards from week 1 (spare printed cards for anyone new)",
                   "qty": 1,
                   "per": "person"
                 }
@@ -759,7 +772,7 @@
               "supplies": [
                 {
                   "id": "bless-x-88",
-                  "name": "BLESS cards from week 1 (spare index cards for anyone new)",
+                  "name": "BLESS cards from week 1 (spare printed cards for anyone new)",
                   "qty": 1,
                   "per": "person"
                 }
@@ -979,7 +992,7 @@
               "supplies": [
                 {
                   "id": "bless-x-114",
-                  "name": "BLESS cards from week 1 (spare index cards for anyone new)",
+                  "name": "BLESS cards from week 1 (spare printed cards for anyone new)",
                   "qty": 1,
                   "per": "person"
                 }

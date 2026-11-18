@@ -1,4 +1,4 @@
-import { DesignRevision, FamilyCues, LinkItem, Part, PartType, Section, SectionRole, Series, SeriesColor, Service, Supply, SupplyPer, TeachingRun } from '../types';
+import { DesignRevision, FamilyCues, LinkItem, Part, PartType, Section, SectionRole, Series, SeriesColor, Service, Supply, SupplyPer, TeachingRun, PracticeCard } from '../types';
 import { PART_TYPE_KEYS } from './partTypes';
 import { normalizeDesign } from './design';
 
@@ -121,6 +121,13 @@ export const newRun = (r: Partial<Record<keyof TeachingRun, unknown>> = {}): Tea
 
 export const SERIES_COLORS: SeriesColor[] = ['indigo', 'sky', 'emerald', 'amber', 'rose', 'violet', 'slate'];
 
+const readPracticeCard = (raw: unknown): PracticeCard | undefined => {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const c = raw as Record<string, unknown>;
+  const back = Array.isArray(c.back) ? c.back.map((x) => str(x)).filter(Boolean).slice(0, 8) : [];
+  return { label: str(c.label), lines: Math.max(0, Math.min(5, Math.round(num(c.lines, 3)))), footer: str(c.footer), back, writeIn: str(c.writeIn) };
+};
+
 export const newSeries = (s: Partial<Record<keyof Series, unknown>> = {}): Series => {
   const now = Date.now();
   return {
@@ -136,6 +143,7 @@ export const newSeries = (s: Partial<Record<keyof Series, unknown>> = {}): Serie
     design: s.design ? normalizeDesign(s.design) : undefined,
     runs: Array.isArray(s.runs) ? s.runs.filter((r) => r && typeof r === 'object').map((r) => newRun(r as Partial<TeachingRun>)) : [],
     printRun: str(s.printRun),
+    practiceCard: readPracticeCard(s.practiceCard),
     designHistory: Array.isArray(s.designHistory)
       ? s.designHistory.slice(0, 20).filter((r) => r && typeof r === 'object').map((r) => ({ ...(r as DesignRevision), design: normalizeDesign((r as DesignRevision).design) }))
       : undefined,

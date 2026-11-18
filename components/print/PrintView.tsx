@@ -454,8 +454,48 @@ const FullWeek: React.FC<{ service: Service; series?: Series; divider?: boolean 
     <Lesson service={service} series={series} />
     <SmallGroupPage service={service} series={series} />
     <FamilyPage service={service} series={series} />
+    {series?.practiceCard && service.week === 1 && <PracticeCards series={series} />}
   </>
 );
+
+// The series' wallet card: two sheets of ten business-size cards, fronts then backs, cut apart by the leader.
+const PracticeCards: React.FC<{ series: Series }> = ({ series }) => {
+  const card = series.practiceCard!;
+  const front = (i: number) => (
+    <div key={i} className="pr-pc">
+      <div className="pr-pc-spine" />
+      <div className="pr-pc-in">
+        <div className="pr-pc-top"><span className="pr-pc-title">{series.title}</span>{card.label && <span className="pr-pc-kick">{card.label}</span>}</div>
+        <ol className="pr-pc-lines">
+          {Array.from({ length: card.lines }, (_, n) => <li key={n}><span>{n + 1}</span><i /></li>)}
+        </ol>
+        {card.footer && <p className="pr-pc-foot">{card.footer}</p>}
+      </div>
+    </div>
+  );
+  const back = (i: number) => (
+    <div key={i} className="pr-pc back">
+      <div className="pr-pc-spine" />
+      <div className="pr-pc-in">
+        <ul className="pr-pc-back">{card.back.map((line, n) => <li key={n}><b>{line.charAt(0)}</b>{line.slice(1)}</li>)}</ul>
+        {card.writeIn && <div className="pr-pc-write"><span>{card.writeIn}</span><i /></div>}
+      </div>
+    </div>
+  );
+  const ten = Array.from({ length: 10 }, (_, i) => i);
+  return (
+    <>
+      <section className="pr-cards">
+        <p className="pr-cards-label">{series.title} cards · fronts · cut along the gray lines</p>
+        <div className="pr-cards-grid">{ten.map(front)}</div>
+      </section>
+      <section className="pr-cards">
+        <p className="pr-cards-label">{series.title} cards · backs · print on the back of the fronts</p>
+        <div className="pr-cards-grid">{ten.map(back)}</div>
+      </section>
+    </>
+  );
+};
 
 const PageHead: React.FC<{ service: Service; series?: Series; kicker: string; title: string; right?: React.ReactNode }> = ({ service, series, kicker, title, right }) => (
   <header className="pr-head pr-head-split">

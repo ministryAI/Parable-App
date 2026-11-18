@@ -517,3 +517,28 @@
 .pr-stars-qs li { font-size: var(--fs-body, 10pt); line-height: 1.45; }
 .pr-stars-qs li + li { margin-top: 7pt; }
 .pr-stars-qs li::marker { color: var(--c); font-weight: 700; }
+
+/* ---------- Practice cards: two sheets of ten 3.5 × 2 in cards, fronts then backs ---------- */
+.pr-cards { page: cover; break-before: page; break-after: page; width: 8.5in; height: 11in; padding: 0.32in 0.75in 0; overflow: hidden; }
+.pr-preview > .pr-cards { padding: 0.32in 0.75in 0; min-height: 11in; }
+.pr-cards-label { margin: 0 0 0.12in !important; text-align: center; font: 600 7.5pt var(--f-ui); letter-spacing: 0.14em; text-transform: uppercase; color: #8A8A85; }
+.pr-cards-grid { display: grid; grid-template-columns: 3.5in 3.5in; grid-auto-rows: 2in; outline: 0.6pt solid #C9C9C4; }
+.pr-pc { position: relative; overflow: hidden; outline: 0.6pt solid #C9C9C4; background: white; color: var(--ink); }
+.pr-pc-spine { position: absolute; left: 0; top: 0; bottom: 0; width: 0.16in; background: var(--c-raw); }
+.pr-pc.back .pr-pc-spine { left: auto; right: 0; }
+.pr-pc-in { position: absolute; inset: 0.16in 0.2in 0.14in 0.34in; display: flex; flex-direction: column; }
+.pr-pc.back .pr-pc-in { inset: 0.16in 0.34in 0.14in 0.2in; }
+.pr-pc-top { display: flex; justify-content: space-between; align-items: baseline; gap: 6pt; border-bottom: 2.2pt solid var(--ink); padding-bottom: 2pt; }
+.pr-pc-title { font: 700 19pt/1 var(--f-poster, var(--f-display)); letter-spacing: 0.01em; white-space: nowrap; }
+.pr-pc-kick { font: 700 6.5pt var(--f-ui); letter-spacing: 0.14em; text-transform: uppercase; color: var(--c); white-space: nowrap; }
+.pr-pc-lines { list-style: none; margin: 0.1in 0 0; padding: 0; flex: 1; display: flex; flex-direction: column; justify-content: space-around; }
+.pr-pc-lines li { display: flex; align-items: flex-end; gap: 6pt; }
+.pr-pc-lines span { font: 700 11pt/1 var(--f-poster, var(--f-display)); color: var(--c); width: 9pt; }
+.pr-pc-lines i { flex: 1; border-bottom: 0.8pt solid var(--ink); height: 14pt; }
+.pr-pc-foot { margin: 4pt 0 0 !important; font: 500 6.5pt var(--f-ui); color: var(--muted); }
+.pr-pc-back { list-style: none; margin: 0; padding: 0; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.pr-pc-back li { font: 600 11.5pt/1 var(--f-poster, var(--f-display)); text-transform: uppercase; letter-spacing: 0.02em; }
+.pr-pc-back b { color: var(--c); font-weight: 700; }
+.pr-pc-write { margin-top: 7pt; display: flex; align-items: flex-end; gap: 6pt; }
+.pr-pc-write span { font: 700 6pt var(--f-ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.pr-pc-write i { flex: 1; border-bottom: 0.8pt solid var(--ink); height: 11pt; }

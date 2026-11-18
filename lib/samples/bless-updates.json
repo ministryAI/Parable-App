@@ -285,5 +285,141 @@
   "field": "leaderNotes",
   "from": "Optional student role: ask a student ahead of time if they'd like to share a one-minute story of where they have seen God. Never put a student on the spot.",
   "to": ""
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-20",
+  "field": "instructions",
+  "from": "FRANCS helps students notice the people God has placed around them. Give everyone paper and a pen. Read each category aloud and give students a moment to write names:\n\n\u2022 Friends: Who do you choose to spend time with?\n\u2022 Relatives: Who is in your family, near or far?\n\u2022 Acquaintances: Who do you cross paths with regularly?\n\u2022 Neighbors: Who lives near you?\n\u2022 Classmates: Who do you see in class, at lunch, on the bus, or at practice?\n\u2022 Strangers: Who do you pass often but have never really met?\n\nThen hand out an index card to each student. This is their BLESS card. Ask them to choose three names from their map and write them on the card. Suggest they keep it in a phone case, wallet, or planner. They'll use it every week.",
+  "to": "FRANCS helps students notice the people God has placed around them. Give everyone paper and a pen. Read each category aloud and give students a moment to write names:\n\n\u2022 Friends: Who do you choose to spend time with?\n\u2022 Relatives: Who is in your family, near or far?\n\u2022 Acquaintances: Who do you cross paths with regularly?\n\u2022 Neighbors: Who lives near you?\n\u2022 Classmates: Who do you see in class, at lunch, on the bus, or at practice?\n\u2022 Strangers: Who do you pass often but have never really met?\n\nThen hand out a BLESS card to each student (printed from the card sheets after this week's family page, or an index card). Ask them to choose three names from their map and write them on the card. Suggest they keep it in a phone case, wallet, or planner. They'll use it every week."
+ },
+ {
+  "service": "bless-week-1",
+  "part": "bless-p-20",
+  "field": "supplies",
+  "from": [
+   {
+    "id": "bless-x-17",
+    "name": "Pens",
+    "qty": 1,
+    "per": "person"
+   },
+   {
+    "id": "bless-x-18",
+    "name": "Sheets of paper",
+    "qty": 1,
+    "per": "person"
+   },
+   {
+    "id": "bless-x-19",
+    "name": "Index cards (BLESS cards)",
+    "qty": 1,
+    "per": "person"
+   }
+  ],
+  "to": [
+   {
+    "id": "bless-x-17",
+    "name": "Pens",
+    "qty": 1,
+    "per": "person"
+   },
+   {
+    "id": "bless-x-18",
+    "name": "Sheets of paper",
+    "qty": 1,
+    "per": "person"
+   },
+   {
+    "id": "bless-x-19",
+    "name": "Printed BLESS cards (the card sheets after this week's family page)",
+    "qty": 1,
+    "per": "person"
+   }
+  ]
+ },
+ {
+  "service": "bless-week-2",
+  "part": "bless-p-45",
+  "field": "supplies",
+  "from": [
+   {
+    "id": "bless-x-44",
+    "name": "BLESS cards from week 1 (spare index cards for anyone new)",
+    "qty": 1,
+    "per": "person"
+   }
+  ],
+  "to": [
+   {
+    "id": "bless-x-44",
+    "name": "BLESS cards from week 1 (spare printed cards for anyone new)",
+    "qty": 1,
+    "per": "person"
+   }
+  ]
+ },
+ {
+  "service": "bless-week-3",
+  "part": "bless-p-65",
+  "field": "supplies",
+  "from": [
+   {
+    "id": "bless-x-64",
+    "name": "BLESS cards from week 1 (spare index cards for anyone new)",
+    "qty": 1,
+    "per": "person"
+   }
+  ],
+  "to": [
+   {
+    "id": "bless-x-64",
+    "name": "BLESS cards from week 1 (spare printed cards for anyone new)",
+    "qty": 1,
+    "per": "person"
+   }
+  ]
+ },
+ {
+  "service": "bless-week-4",
+  "part": "bless-p-89",
+  "field": "supplies",
+  "from": [
+   {
+    "id": "bless-x-88",
+    "name": "BLESS cards from week 1 (spare index cards for anyone new)",
+    "qty": 1,
+    "per": "person"
+   }
+  ],
+  "to": [
+   {
+    "id": "bless-x-88",
+    "name": "BLESS cards from week 1 (spare printed cards for anyone new)",
+    "qty": 1,
+    "per": "person"
+   }
+  ]
+ },
+ {
+  "service": "bless-week-5",
+  "part": "bless-p-115",
+  "field": "supplies",
+  "from": [
+   {
+    "id": "bless-x-114",
+    "name": "BLESS cards from week 1 (spare index cards for anyone new)",
+    "qty": 1,
+    "per": "person"
+   }
+  ],
+  "to": [
+   {
+    "id": "bless-x-114",
+    "name": "BLESS cards from week 1 (spare printed cards for anyone new)",
+    "qty": 1,
+    "per": "person"
+   }
+  ]
  }
 ]

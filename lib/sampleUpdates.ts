@@ -1,4 +1,5 @@
-import { Service } from '../types';
+import { Series, Service } from '../types';
+import bless from './samples/bless.json';
 import blessUpdates from './samples/bless-updates.json';
 
 // Corrections to the built-in sample, applied to saved copies on load. Each one replaces a field only
@@ -44,3 +45,10 @@ export const applySampleUpdates = (services: Service[], updates: Update[] = bles
     return next;
   });
 };
+
+// The built-in series' practice card, for saved copies made before the card existed.
+export const addSamplePracticeCards = (series: Series[]): Series[] =>
+  series.map((s) => {
+    const sample = bless.series.find((x) => x.id === s.id) as { practiceCard?: Series['practiceCard'] } | undefined;
+    return !s.practiceCard && sample?.practiceCard ? { ...s, practiceCard: sample.practiceCard } : s;
+  });

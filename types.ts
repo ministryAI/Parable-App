@@ -141,8 +141,19 @@ export interface Series {
   designHistory?: DesignRevision[]; // newest first, kept short
   runs: TeachingRun[]; // each time this series is taught; the series itself has no dates
   printRun: string; // id of the run whose dates go on printouts; '' prints without dates
+  practiceCard?: PracticeCard; // a wallet card for the series practice, printed as cut-out sheets after week 1
   createdAt: number;
   updatedAt: number;
+}
+
+// A card students keep for the series practice: the series title and a few write-in lines on the front,
+// the practice's steps on the back.
+export interface PracticeCard {
+  label: string; // "My three names"
+  lines: number; // write-in lines on the front
+  footer: string; // a one-line reminder under the lines
+  back: string[]; // one line each, e.g. the five B.L.E.S.S. practices
+  writeIn: string; // an optional write-in line on the back; '' for none
 }
 
 // One time a series is taught: a name, an optional start time, and a date (or label) per lesson.

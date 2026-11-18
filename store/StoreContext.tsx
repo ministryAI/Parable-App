@@ -3,7 +3,7 @@ import { Database, LayoutPack, Part, PrintScope, Series, Service } from '../type
 import { clonePart, newPart, newSeries, newService } from '../lib/factory';
 import { migrateLegacySeries, migrateRuns, reschedule, weeksOf } from '../lib/series';
 import { migrateStudySeries, migrateStudyServices } from '../lib/migrateStudy';
-import { applySampleUpdates } from '../lib/sampleUpdates';
+import { addSamplePracticeCards, applySampleUpdates } from '../lib/sampleUpdates';
 import { AISettings, loadSettings, saveSettings } from '../services/aiSettings';
 import { testConnection } from '../services/aiService';
 import { SAMPLE_LAYOUTS, SAMPLES, seriesFingerprint } from '../lib/samples';
@@ -81,7 +81,7 @@ const readDb = (): Database => {
         rawSeries.map((x) => newSeries(x as Record<string, unknown>)),
       );
       const services = applySampleUpdates(migrateStudyServices(legacy.services));
-      const series = migrateStudySeries(migrateRuns(legacy.series, services, rawSeries));
+      const series = addSamplePracticeCards(migrateStudySeries(migrateRuns(legacy.series, services, rawSeries)));
       const layouts = Array.isArray(data.layouts) ? data.layouts.flatMap((l: unknown) => { try { return [readLayout(l)]; } catch { return []; } }) : [];
       return { version: 1, series, services, library: Array.isArray(data.library) ? data.library.map(newPart) : [], layouts };
     }
