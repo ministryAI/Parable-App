@@ -496,6 +496,8 @@ const Lesson: React.FC<{ service: Service; series?: Series }> = ({ service, seri
 const SessionPlan: React.FC<{ service: Service; series?: Series }> = ({ service, series }) => {
   const { activities, challenge } = engagement(service);
   const supplies = aggregateSupplies(service);
+  // Some amounts grow with the class (one per student, one per group): say what they're based on.
+  const scales = service.sections.some((sec) => visibleParts(sec).some((p) => p.supplies.some((x) => x.name.trim() && x.per !== 'total')));
   const all = service.sections.filter((s) => !s.hidden).flatMap(visibleParts);
   const media = all.flatMap((p) => p.media.filter((l) => l.url));
   const objectives = listItems(service.objectives);
@@ -528,10 +530,13 @@ const SessionPlan: React.FC<{ service: Service; series?: Series }> = ({ service,
           )}
           <Row icon={Package} label="What you will need">
             {supplies.length === 0 && media.length === 0 ? <p className="pr-row-lead">No supplies listed yet.</p> : (
-              <ul className="pr-checklist">
-                {supplies.map((l) => <li key={l.key}><span className="pr-box" /><span>{l.name}</span><span className="qty">{fmtQty(l.total)}</span></li>)}
-                {media.map((m) => <li key={m.id}><span className="pr-box" /><span>{m.label || 'Media'} <em className="pr-dim">(on screen)</em></span><span /></li>)}
-              </ul>
+              <>
+                {scales && <p className="pr-row-lead">How many to bring for a group of {service.classSize}:</p>}
+                <ul className="pr-checklist">
+                  {supplies.map((l) => <li key={l.key}><span className="pr-box" /><span className="qty">{fmtQty(l.total)}</span><span>{l.name}</span></li>)}
+                  {media.map((m) => <li key={m.id}><span className="pr-box" /><span /><span>{m.label || 'Media'} <em className="pr-dim">(on screen)</em></span></li>)}
+                </ul>
+              </>
             )}
           </Row>
         </div>
@@ -1025,8 +1030,8 @@ const SupplyList: React.FC<{ service: Service; series?: Series }> = ({ service, 
       {aggregateSupplies(service).map((l) => (
         <li key={l.key}>
           <span className="pr-box" />
-          <span>{l.name}<span className="src">{l.sources.join(', ')}</span></span>
           <span className="qty">{fmtQty(l.total)}</span>
+          <span>{l.name}<span className="src">{l.sources.join(', ')}</span></span>
         </li>
       ))}
     </ul>

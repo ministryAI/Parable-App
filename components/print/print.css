@@ -109,9 +109,9 @@
 
 /* ---------- Week opener ---------- */
 .pr-checklist { list-style: none; margin: 0; padding: 0; }
-.pr-checklist li { display: grid; grid-template-columns: 10pt 1fr auto; gap: 7pt; align-items: baseline; padding: 3pt 0; border-bottom: 0.5pt dotted var(--rule); font-size: 9pt; break-inside: avoid; }
+.pr-checklist li { display: grid; grid-template-columns: 10pt 18pt 1fr; gap: 7pt; align-items: baseline; padding: 3pt 0; border-bottom: 0.5pt dotted var(--rule); font-size: 9pt; break-inside: avoid; }
 .pr-box { width: 8pt; height: 8pt; border: 1pt solid var(--ink); border-radius: calc(2pt * var(--r)); display: inline-block; transform: translateY(1pt); }
-.pr-checklist .qty { font-weight: 700; font-variant-numeric: tabular-nums; }
+.pr-checklist .qty { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; color: var(--c); }
 .pr-more { font-size: 8pt; color: var(--muted); margin-top: 5pt !important; }
 .pr-prep { list-style: none; margin: 0 0 18pt; padding: 0; }
 .pr-prep li { display: grid; grid-template-columns: 10pt 1fr; gap: 7pt; padding: 3pt 0; font-size: 9pt; break-inside: avoid; }
