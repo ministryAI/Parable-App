@@ -77,14 +77,10 @@ Family page
 - Bedtime: "Where did you see God today?" and a short, low-pressure prayer. Add a note for parents: hard questions often mean faith is becoming the teen's own, so listen first.
 
 Leader guide (welcome letter)
-- Thank volunteers and remind them: being known matters more than being impressive.
-- Listen more than you talk. "I don't know, I wonder too" is a faithful answer.
-- Notice the student who is here but not included, and sit with them.
-- Pray for each student by name before the lesson.
-- When a student questions or doubts, stay calm, stay close, and follow up one-on-one.
-- Some students need help seeing hope; others need someone to stay with them in the pain. Follow their lead.
-- Behavior can be a response to something hard. Respond calmly.
-- Encourage students to care for each other, not to depend on one leader. Act on good student ideas.
+- Thank the leaders warmly and encourage them. Never instruct, coach, correct, or preach at them: no lists of what to do or how to act.
+- Say briefly what the series is about, and how the weekly practice and the study method work.
+- Remind them they don't need every answer, and that God is already at work in their students and in them.
+- Keep it short: three or four short paragraphs, in a warm, plain voice.
 
 ## 4. Words to use and words to avoid
 
@@ -198,7 +194,8 @@ export const PLAYBOOK_FIXES: [string, string][] = [
   [
     "12. Is the lesson free of guilt",
     "11. Is the lesson free of guilt"
-  ]
+  ],
+  ["Leader guide (welcome letter)\n- Thank volunteers and remind them: being known matters more than being impressive.\n- Listen more than you talk. \"I don't know, I wonder too\" is a faithful answer.\n- Notice the student who is here but not included, and sit with them.\n- Pray for each student by name before the lesson.\n- When a student questions or doubts, stay calm, stay close, and follow up one-on-one.\n- Some students need help seeing hope; others need someone to stay with them in the pain. Follow their lead.\n- Behavior can be a response to something hard. Respond calmly.\n- Encourage students to care for each other, not to depend on one leader. Act on good student ideas.", "Leader guide (welcome letter)\n- Thank the leaders warmly and encourage them. Never instruct, coach, correct, or preach at them: no lists of what to do or how to act.\n- Say briefly what the series is about, and how the weekly practice and the study method work.\n- Remind them they don't need every answer, and that God is already at work in their students and in them.\n- Keep it short: three or four short paragraphs, in a warm, plain voice."]
 ];
 
 export const updatePlaybook = (text: string) =>

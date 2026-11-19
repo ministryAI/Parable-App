@@ -508,7 +508,7 @@ export const draftSeries = async (
   const outline = await chatJson<{ title?: string; description?: string; bigIdea?: string; memoryVerse?: string; leaderGuide?: string; weeks?: WeekOutline[] }>(settings, [
     `Outline a ${params.weeks}-week ministry series about "${params.topic}" for ${params.audience}.`,
     'Fit the topic into the larger story of the Bible.',
-    `Respond as {"title":"series title","description":"2-sentence series overview","bigIdea":"the one idea that ties the series together","memoryVerse":"verse text (reference)","leaderGuide":"a warm 120-word welcome letter to volunteer leaders explaining the series goal and how to lead it","weeks":[{"title":"...","scripture":"reference","bigIdea":"one sentence"}]} with exactly ${params.weeks} weeks.`,
+    `Respond as {"title":"series title","description":"2-sentence series overview","bigIdea":"the one idea that ties the series together","memoryVerse":"verse text (reference)","leaderGuide":"a warm welcome letter of about 120 words that thanks and encourages the leaders and briefly says what the series is about, without instructing or coaching them","weeks":[{"title":"...","scripture":"reference","bigIdea":"one sentence"}]} with exactly ${params.weeks} weeks.`,
   ].join('\n'));
   const series = newSeries({
     title: params.title || outline.title || params.topic,
